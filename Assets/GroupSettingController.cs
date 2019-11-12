@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using UnityEngine.UI;
 
 public enum GroupSettingState
 {
-    Nil = 0,
     Setting =1,
     Done =2,
-    Rejected =3,
-    Ready = 4
+    Rejected =3
 }
 
 public class GroupSettingController : MonoBehaviour
@@ -17,18 +16,16 @@ public class GroupSettingController : MonoBehaviour
     [SerializeField]
     private Floor CurrentFloor;
 
-    public GroupSettingState GroupSettingState = GroupSettingState.Nil;
+    public GroupSettingState GroupSettingState = GroupSettingState.Setting;
 
     public int GroupSizeSelected = 2;
-    public int TotalGroup = 72;
+    public const int TotalGroup = 12;
 
     [SerializeField]
     private List<Tile> SeletedTiles = new List<Tile>();
 
-    private ButtonCellUI StartButton;
-    private ButtonCellUI DoneButton;
+    private Text MainText;
     private ButtonCellUI ResetButton;
-    private ButtonCellUI LoadButton;
 
     //private List<ButtonCellUI> DefaultFormationSlots;
 
@@ -45,21 +42,11 @@ public class GroupSettingController : MonoBehaviour
     {
         var UIController = GroupSettingSceneUIController.Instance;
 
-        StartButton = UIController.MainMenu.AddCell();
-        DoneButton = UIController.MainMenu.AddCell();
+        MainText = UIController.MainText;
         ResetButton = UIController.MainMenu.AddCell();
-        LoadButton = UIController.MainMenu.AddCell();
-
-        StartButton.Text.text = "Press to Start";
-        LoadButton.Text.text = "Load Saved Formation";
-
-        StartButton.Button.onClick.AddListener(OnStartPressed);
-        DoneButton.Button.onClick.AddListener(OnDonePressed);
         ResetButton.Button.onClick.AddListener(OnResetPressed);
-        LoadButton.Button.onClick.AddListener(OnLoadPressed);
 
-        SaveDataController.TryLoad(DataName.SavedFormation, out List<List<PosVector>> Data );
-        SavedFormation.Update(Data);
+        SavedFormation.Init();
         SavedFormationList = SavedFormation.SavedList;
 
         for (int i = 0; i < SavedFormation.AllowedCount; i++)
@@ -69,6 +56,8 @@ public class GroupSettingController : MonoBehaviour
             button.Button.onClick.AddListener( delegate { OnSlotPressed(ID); });
             SavedFormationButtons.Add(button);
         }
+
+        GroupSettingState = GroupSettingState.Setting;
     }
 
     private void Update()
@@ -80,24 +69,30 @@ public class GroupSettingController : MonoBehaviour
             button.Text.text = data.Used ? data.Name : data.Name + " (Empty Slot)";
         }
 
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
         switch (GroupSettingState)
         {
             case GroupSettingState.Setting:
-                StartButton.Text.text = (TotalGroup / GroupSizeSelected - SeletedTiles.Count) +  " Positions Left";
-                DoneButton.Text.text = SeletedTiles.Count == TotalGroup / GroupSizeSelected ? "Done" : "";
-                ResetButton.Text.text = SeletedTiles.Count > 0 ? " Reset" : "";
 
-                //for (int i = 0; i < SavedFormationList.Count; i++)
-                //{
-                //    var button = SavedFormationButtons[i];
-                //    var data = SavedFormationList[i];
-                //    button.Text.text = data.Used ? "Empty Slot" : data.Name;
-                //}
+                if (TotalGroup - SeletedTiles.Count > 0)
+                {
+                    MainText.text = "Place Unit on Screen. Units Reminded : " + (TotalGroup - SeletedTiles.Count);
+                }
+                else
+                {
+                    MainText.text = "Choose a Slot to save ";
+                }
+
+                ResetButton.Text.text = SeletedTiles.Count > 0 ? " Reset" : "";
 
                 break;
             case GroupSettingState.Done:
                 break;
-            default:    
+            default:
                 break;
         }
     }
@@ -109,7 +104,52 @@ public class GroupSettingController : MonoBehaviour
 
     private void OnSlotPressed( int ID)
     {
-        Debug.Log("Happy ? " + ID);
+        if (TotalGroup - SeletedTiles.Count > 0)
+        {
+            if (SavedFormationList[ID].Used)
+            {
+                LoadSlot(ID);
+            }
+            else
+            {
+                Debug.Log("No Data");
+            }
+        }
+        else
+        {
+            SaveSlot(ID);
+        }
+    }
+
+    private void LoadSlot(int ID)
+    {
+        List<PosVector> pos = SavedFormationList[ID].Posistions;
+        SeletedTiles = new List<Tile>();
+
+        foreach (var item in pos)
+        {
+            SeletedTiles.Add(CurrentFloor.GetTileByPos(item));
+        }
+
+        foreach (var item in SeletedTiles)
+        {
+            item.TileObject.SetActive(false);
+        }
+    }
+
+    private void SaveSlot(int ID)
+    {
+        List<PosVector> pos = new List<PosVector>();
+        foreach (var item in SeletedTiles)
+        {
+            pos.Add(item.Position);
+        }
+
+        SavedFormationList[ID].Posistions = pos;
+        SavedFormationList[ID].Used = true;
+
+        SavedFormation.Update();
+        OnResetPressed();
     }
 
     private void OnTilePressed(Tile tile)
@@ -121,7 +161,7 @@ public class GroupSettingController : MonoBehaviour
 
         if (tile.IsMainTile )
         {
-            if (tile.TileObject.activeSelf && SeletedTiles.Count < TotalGroup / GroupSizeSelected)
+            if (tile.TileObject.activeSelf && SeletedTiles.Count < TotalGroup)
             {
                 SeletedTiles.Add(tile);
                 tile.TileObject.SetActive(!tile.TileObject.activeSelf);
@@ -134,25 +174,6 @@ public class GroupSettingController : MonoBehaviour
         }
     }
 
-    private void OnStartPressed()
-    {
-        if (GroupSettingState == GroupSettingState.Nil)
-        {
-            GroupSettingState = GroupSettingState.Setting;
-        }
-    }
-
-    private void OnDonePressed()
-    {
-        if (GroupSettingState == GroupSettingState.Setting)
-        {
-            GroupSettingState = GroupSettingState.Done;
-            Save();
-        }
-
-        OnResetPressed();
-    }
-
     private void OnResetPressed()
     {
         foreach (var item in SeletedTiles)
@@ -160,42 +181,7 @@ public class GroupSettingController : MonoBehaviour
             item.TileObject.SetActive(true);
         }
         SeletedTiles = new List<Tile>();
-    }
 
-    private void OnLoadPressed()
-    {
-        OnResetPressed();
-        Load();
-    }
-
-    private void Load()
-    {
-        if (SaveDataController.TryLoad(DataName.DefaultFormation, out List<PosVector> tempPos))
-        {
-            foreach (var item in tempPos)
-            {
-                SeletedTiles.Add(CurrentFloor.GetTileByPos(item));
-            }
-
-            foreach (var item in SeletedTiles)
-            {
-                item.TileObject.SetActive(false);
-            }
-        }
-        else
-        {
-            Debug.Log("No Data");
-        }
-    }
-
-    private void Save()
-    {
-        List<PosVector> tempPos = new List<PosVector>();
-        foreach (var item in SeletedTiles)
-        {
-            tempPos.Add(item.Position);
-        }
-
-        SaveDataController.Save(DataName.DefaultFormation , tempPos);
+        GroupSettingState = GroupSettingState.Setting;
     }
 }

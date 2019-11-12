@@ -13,26 +13,52 @@ public class SavedFormation
 	public bool Used = false;
 	public List<PosVector> Posistions;
 
-	public static void Update(List<List<PosVector>> loadedData)
+	public static void Update()
 	{
-		DidInit = true;
+        if (!DidInit)
+        {
+            Init();
+        }
+
+        List<List<PosVector>> saveData = new List<List<PosVector>>();
+
+        for (int i = 0; i < SavedList.Count; i++)
+        {
+            saveData.Add(SavedList[i].Posistions);
+        }
+
+        SaveDataController.Save(DataName.SavedFormation, saveData);
+    }
+
+    public static void Init()
+    {
+        DidInit = true;
+        SaveDataController.TryLoad(DataName.SavedFormation, out List<List<PosVector>> loadedData);
+
         SavedList = new List<SavedFormation>();
 
         if (loadedData == null)
         {
             loadedData = new List<List<PosVector>>();
+            for (int i = 0; i < AllowedCount; i++)
+            {
+                loadedData.Add(new List<PosVector>());
+            }
         }
 
-		for (int i = 0; i < AllowedCount; i++)
-		{
-			SavedFormation formation = new SavedFormation()
-			{
-				ID = i,
-				Name = "Formation " + i.ToString(),
-				Used = i < loadedData.Count,
-				Posistions = i < loadedData.Count ? loadedData[i] : new List<PosVector>()
-			};
+        for (int i = 0; i < AllowedCount; i++)
+        {
+            SavedFormation formation = new SavedFormation()
+            {
+                ID = i,
+                Name = "Formation " + i.ToString(),
+                Used = loadedData[i].Count != 0,
+                Posistions = loadedData[i]
+
+            };
             SavedList.Add(formation);
-		}
-	}
+        }
+
+
+    }
 }

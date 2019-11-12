@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: GroupSettingFloor
   m_EditorClassIdentifier: Assembly-CSharp::FloorSetting
-  groundWidth: 81
-  groundHeight: 81
-  colorRadis: 5
-  centerColor: {r: 0, g: 0, b: 1, a: 1}
-  edgeColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  groundWidth: 101
+  groundHeight: 101
+  colorRadis: 6
+  centerColor: {r: 0.41189036, g: 0.41189036, b: 0.9811321, a: 1}
+  edgeColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
   showMainTiles: 1
   hideSmallTiles: 1

@@ -94,7 +94,8 @@ public class Floor : MonoBehaviour
 
                 var color = Go.GetComponent<SpriteRenderer>().color;
 
-                color *= Mathf.CeilToInt(currentTile.Distance / floorSetting.ColorRadis) * 0.2f;
+                color = Color.Lerp(floorSetting.CenterColor, floorSetting.EdgeColor, Mathf.CeilToInt(currentTile.Distance / floorSetting.ColorRadis) * 0.2f);
+
 
                 if (isMainTile && floorSetting.ShowMainTiles)
                 {
@@ -111,7 +112,7 @@ public class Floor : MonoBehaviour
 
                 if (x == 0 && y == 0)
                 {
-                    color.a = 1f;
+                    color.a = 0.75f;
                     Go.GetComponent<SpriteRenderer>().color = color;
                     Go.GetComponent<SpriteRenderer>().sortingOrder += 1;
                     Go.transform.localScale = TilesSample.transform.localScale * 2;
