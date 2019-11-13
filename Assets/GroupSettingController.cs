@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public enum GroupSettingState
 {
+    View =0,
     Setting =1,
     Done =2,
     Rejected =3
@@ -76,6 +77,13 @@ public class GroupSettingController : MonoBehaviour
     {
         switch (GroupSettingState)
         {
+            case GroupSettingState.View:
+
+                ResetButton.Text.text = "Start Edit";
+                MainText.text = "Start Edit ?";
+
+                break;
+
             case GroupSettingState.Setting:
 
                 if (TotalGroup - SeletedTiles.Count > 0)
@@ -135,10 +143,17 @@ public class GroupSettingController : MonoBehaviour
         {
             item.TileObject.SetActive(false);
         }
+
+        GroupSettingState = GroupSettingState.View;
     }
 
     private void SaveSlot(int ID)
     {
+        if (GroupSettingState == GroupSettingState.View)
+        {
+            return;
+        }
+
         List<PosVector> pos = new List<PosVector>();
         foreach (var item in SeletedTiles)
         {
@@ -150,6 +165,8 @@ public class GroupSettingController : MonoBehaviour
 
         SavedFormation.Update();
         OnResetPressed();
+
+        GroupSettingState = GroupSettingState.View;
     }
 
     private void OnTilePressed(Tile tile)
@@ -176,12 +193,23 @@ public class GroupSettingController : MonoBehaviour
 
     private void OnResetPressed()
     {
-        foreach (var item in SeletedTiles)
+        switch (GroupSettingState)
         {
-            item.TileObject.SetActive(true);
-        }
-        SeletedTiles = new List<Tile>();
+            case GroupSettingState.View:
 
-        GroupSettingState = GroupSettingState.Setting;
+                GroupSettingState = GroupSettingState.Setting;
+                break;
+
+            case GroupSettingState.Setting:
+            default:
+                foreach (var item in SeletedTiles)
+                {
+                    item.TileObject.SetActive(true);
+                }
+                SeletedTiles = new List<Tile>();
+
+                GroupSettingState = GroupSettingState.Setting;
+                break;
+        }
     }
 }

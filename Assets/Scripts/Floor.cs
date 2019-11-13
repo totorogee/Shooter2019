@@ -7,6 +7,7 @@ public class Floor : MonoBehaviour
 {
 
     public bool AccpetInput = true;
+    public bool DetectMainTile = true;
     public Tile CenterTile;
 
     [SerializeField]
@@ -22,13 +23,13 @@ public class Floor : MonoBehaviour
 
     private void OnEnable()
     {
-        EventManager.StartListening<PosVector>(EventList.OnMousePressed , MousePressed);
+        EventManager.StartListening<Vector2>(EventList.OnMousePressed , MousePressed);
 
     }
 
     private void OnDisable()
     {
-        EventManager.StopListening<PosVector>(EventList.OnMousePressed, MousePressed);
+        EventManager.StopListening<Vector2>(EventList.OnMousePressed, MousePressed);
 
     }
 
@@ -50,11 +51,20 @@ public class Floor : MonoBehaviour
 
     }
 
-    private void MousePressed(PosVector position)
+    private void MousePressed(Vector2 mousePosition)
     {
         if (AccpetInput)
         {
-            EventManager.TriggerEvent(EventList.TilePressed, GetTileByPos(position));
+            if (DetectMainTile)
+            {
+                EventManager.TriggerEvent(EventList.TilePressed, GetMainTileByPos(mousePosition));
+            }
+            else
+            {
+                EventManager.TriggerEvent(EventList.TilePressed, GetTileByPos(new PosVector(mousePosition)));
+            }
+
+ 
         }
     }
 
@@ -172,55 +182,57 @@ public class Floor : MonoBehaviour
         return GetTileByPos(CenterTile, position);
     }
 
-    //public void OnPressed(object param)
-    //{
-    //    Vector2 pos = new Vector2();
-    //    Tile selected = new Tile();
+    public Tile GetMainTileByPos( Vector2 position)
+    {
 
-    //    if (param is Vector3)
-    //    {
-    //        pos = (Vector2)(Vector3)param;
+        if (GetTileByPos(new PosVector(position)).IsMainTile)
+        {
+            return GetTileByPos(new PosVector(position));
+        }
 
-    //        GameObject Nearest = AllTiles[0].Go;
-    //        float distant = Mathf.Infinity;
-    //        for (int i = 0; i < AllTiles.Count; i++)
-    //        {
-    //            if (((Vector2)(AllTiles[i].Go.transform.position) - pos).sqrMagnitude < distant)
-    //            {
-    //                selected = AllTiles[i];
-    //                Nearest = AllTiles[i].Go;
-    //                distant = ((Vector2)(AllTiles[i].Go.transform.position) - pos).sqrMagnitude;
-    //            }
+        List <Tile> Nearby = NearbyTiles(GetTileByPos(new PosVector(position)));
 
+        Tile result = Nearby[0];
+        float distance = Mathf.Infinity;
 
-    //        }
+        for (int i = 0; i < Nearby.Count; i++)
+        {
+            if (Nearby[i].IsMainTile)
+            {
+                float thisDistance = new Vector2(position.x - Nearby[i].TileObject.transform.position.x,
+                                 position.y - Nearby[i].TileObject.transform.position.y).magnitude;
 
-    //        if (Nearest != null)
-    //        {
-    //            if (Nearest.activeSelf)
-    //            {
-    //                EventManager.TriggerEvent("PlaceMark", (Vector2)Nearest.transform.position);
-    //            }
-    //            else
-    //            {
-    //                EventManager.TriggerEvent("RemoveMark", (Vector2)Nearest.transform.position);
-    //            }
+                if (thisDistance < distance)
+                {
+                    distance = thisDistance;
+                    result = Nearby[i];
+                }
+            }
 
-    //            Nearest.SetActive(!Nearest.activeSelf);
+        }
 
+        return result;
+    }
 
-    //        }
-    //        selected.OnPressed();
+    public List<Tile> NearbyTiles(Tile starting, int range = 1 , bool checkMainTile = false)
+    {
+        List<Tile> result = new List<Tile>();
+        for (int i = -1 * range ; i <= 1 * range; i++)
+        {
+            for (int j = -1 * range; j <= 1 * range; j++)
+            {
+                Tile tile = GetTileByPos(starting.Position + new PosVector(i, j));
+                if (tile != null && tile != starting )
+                {
+                    if (checkMainTile && !tile.IsMainTile)
+                    {
+                        continue;
+                    }
+                    result.Add(tile);
+                }
+            }
+        }
 
-    //        Vector2Int selectedPoint = new Vector2Int((int)selected.Go.transform.position.x, (int)selected.Go.transform.position.y);
-    //        TransTables[30].TryGetValue(selectedPoint, out Vector2Int newPoint);
-    //        TileByCoordinate.TryGetValue(newPoint, out Tile newTile);
-
-    //        newTile.OnPressed();
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Worng Type");
-    //    }
-    //}
+        return result;
+    }
 }

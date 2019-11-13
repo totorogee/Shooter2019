@@ -24,6 +24,17 @@ public class PosVector
         this.x = Mathf.RoundToInt(pos.x);
         this.y = Mathf.RoundToInt(pos.y);
     }
+
+    public PosVector(Vector2 pos)
+    {
+        this.x = Mathf.RoundToInt(pos.x);
+        this.y = Mathf.RoundToInt(pos.y);
+    }
+
+    public static PosVector operator + ( PosVector A , PosVector B)
+    {
+        return new PosVector(A.x + B.x, A.y + B.y);
+    }
 }
 
 public static class VectorTools
