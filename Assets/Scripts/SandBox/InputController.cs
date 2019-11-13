@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.EventSystems;
 
 public class InputController : MonoBehaviour
 {
@@ -17,14 +18,14 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
-        CheckMousePressed();
+        //CheckMousePressed();
     }
 
     private void CheckMousePressed()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            EventManager.TriggerEvent(EventList.OnMousePressed, new PosVector ( MainCamera.ScreenToWorldPoint( Input.mousePosition)));
+            EventManager.TriggerEvent(EventList.OnMousePressed, (Vector2) MainCamera.ScreenToWorldPoint( Input.mousePosition));
         }
     }
 }
