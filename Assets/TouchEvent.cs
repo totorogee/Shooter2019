@@ -4,11 +4,17 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
+[System.Serializable]
+public class TouchUnityEvent : UnityEvent<PointerEventData>
+{
+}
+
 public class TouchEvent : EventTrigger
 {
+    public TouchUnityEvent OnTouch = new TouchUnityEvent();
+
     public override void OnPointerClick(PointerEventData eventData)
     {
-        Vector2 pos = Camera.main.ScreenToWorldPoint(eventData.pressPosition);
-        EventManager.TriggerEvent(EventList.OnMousePressed, pos);
+        OnTouch.Invoke(eventData);
     }
 }

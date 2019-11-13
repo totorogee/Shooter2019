@@ -112,7 +112,7 @@ public class GroupSettingController : MonoBehaviour
 
     private void OnSlotPressed( int ID)
     {
-        if (TotalGroup - SeletedTiles.Count > 0)
+        if (TotalGroup - SeletedTiles.Count > 0 || GroupSettingState == GroupSettingState.View)
         {
             if (SavedFormationList[ID].Used)
             {
@@ -131,6 +131,8 @@ public class GroupSettingController : MonoBehaviour
 
     private void LoadSlot(int ID)
     {
+        Reset();
+
         List<PosVector> pos = SavedFormationList[ID].Posistions;
         SeletedTiles = new List<Tile>();
 
@@ -164,7 +166,7 @@ public class GroupSettingController : MonoBehaviour
         SavedFormationList[ID].Used = true;
 
         SavedFormation.Update();
-        OnResetPressed();
+        Reset();
 
         GroupSettingState = GroupSettingState.View;
     }
@@ -202,14 +204,19 @@ public class GroupSettingController : MonoBehaviour
 
             case GroupSettingState.Setting:
             default:
-                foreach (var item in SeletedTiles)
-                {
-                    item.TileObject.SetActive(true);
-                }
-                SeletedTiles = new List<Tile>();
-
-                GroupSettingState = GroupSettingState.Setting;
+                Reset();
                 break;
         }
+    }
+
+    private void Reset()
+    {
+        foreach (var item in SeletedTiles)
+        {
+            item.TileObject.SetActive(true);
+        }
+        SeletedTiles = new List<Tile>();
+
+        GroupSettingState = GroupSettingState.Setting;
     }
 }

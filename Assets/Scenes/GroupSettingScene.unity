@@ -1072,6 +1072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad71a21b36c3e4f26af59c255659c987, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BackGround: {fileID: 1628596717}
   MainMenu: {fileID: 1034361966}
   TopRightMenu: {fileID: 1140883065}
   MainText: {fileID: 2077220958}
@@ -1223,7 +1224,7 @@ GameObject:
   - component: {fileID: 1628596718}
   - component: {fileID: 1628596717}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: BackGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
