@@ -190,7 +190,7 @@ public class GroupSettingController : MonoBehaviour
 
         if (tile.IsMainTile )
         {
-            if ( !CurrentSelection.ContainsKey(pos) && UnitPlaced() < TotalGroup)
+            if ( !CurrentSelection.ContainsKey(pos) && UnitPlaced() + size +1 <= TotalGroup)
             {
                 CurrentSelection.Add(pos, size);
                 GameObject Go = Instantiate(GroupIcons[size] , CurrentFloor.transform).gameObject;
