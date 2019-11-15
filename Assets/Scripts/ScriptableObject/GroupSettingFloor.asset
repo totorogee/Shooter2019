@@ -18,4 +18,4 @@ MonoBehaviour:
   centerColor: {r: 0.41189036, g: 0.41189036, b: 0.9811321, a: 1}
   edgeColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
   showMainTiles: 1
-  hideSmallTiles: 0
+  hideSmallTiles: 1

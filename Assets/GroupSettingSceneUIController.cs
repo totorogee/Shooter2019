@@ -13,6 +13,8 @@ public class GroupSettingSceneUIController : MonoBehaviour
 
     public ButtonCellUIController MainMenu;
     public ButtonCellUIController TopRightMenu;
+    public ButtonCellUIController ButtonMenu;
+
     public Text MainText;
 
     private void OnEnable()
