@@ -7,13 +7,16 @@ using UnityEngine.EventSystems;
 
 public class GroupSettingSceneUIController : MonoBehaviour
 {
+    public int CurrentGroupIconID = 0;
+
+
     public TouchEvent BackGround;
 
     public static GroupSettingSceneUIController Instance;
 
     public ButtonCellUIController MainMenu;
     public ButtonCellUIController TopRightMenu;
-    public ButtonCellUIController ButtonMenu;
+    public IconCellUIController BottonMenu;
 
     public Text MainText;
 
@@ -38,6 +41,11 @@ public class GroupSettingSceneUIController : MonoBehaviour
     {
         Vector2 pos = Camera.main.ScreenToWorldPoint(eventData.pressPosition);
         EventManager.TriggerEvent(EventList.OnMousePressed, pos);
+    }
+
+    private void Start()
+    {
+        BottonMenu.Init();
     }
 
 }

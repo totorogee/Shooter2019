@@ -11,7 +11,9 @@ public class SavedFormation
 	public int ID = 0;
 	public string Name = "";
 	public bool Used = false;
-	public List<PosVector> Posistions;
+    public Dictionary<PosVector, int> PositionGroupSizePair = new Dictionary<PosVector, int>();
+
+	//public List<PosVector> Posistions;
 
 	public static void Update()
 	{
@@ -20,11 +22,11 @@ public class SavedFormation
             Init();
         }
 
-        List<List<PosVector>> saveData = new List<List<PosVector>>();
+        List<Dictionary<PosVector, int>> saveData = new List<Dictionary<PosVector, int>>();
 
         for (int i = 0; i < SavedList.Count; i++)
         {
-            saveData.Add(SavedList[i].Posistions);
+            saveData.Add(SavedList[i].PositionGroupSizePair);
         }
 
         SaveDataController.Save(DataName.SavedFormation, saveData);
@@ -33,16 +35,16 @@ public class SavedFormation
     public static void Init()
     {
         DidInit = true;
-        SaveDataController.TryLoad(DataName.SavedFormation, out List<List<PosVector>> loadedData);
+        SaveDataController.TryLoad(DataName.SavedFormation, out List<Dictionary<PosVector, int>> loadedData);
 
         SavedList = new List<SavedFormation>();
 
         if (loadedData == null)
         {
-            loadedData = new List<List<PosVector>>();
+            loadedData = new List<Dictionary<PosVector, int>>();
             for (int i = 0; i < AllowedCount; i++)
             {
-                loadedData.Add(new List<PosVector>());
+                loadedData.Add(new Dictionary<PosVector, int>());
             }
         }
 
@@ -53,7 +55,7 @@ public class SavedFormation
                 ID = i,
                 Name = "Formation " + i.ToString(),
                 Used = loadedData[i].Count != 0,
-                Posistions = loadedData[i]
+                PositionGroupSizePair = loadedData[i]
 
             };
             SavedList.Add(formation);

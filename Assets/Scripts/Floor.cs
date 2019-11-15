@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Floor : MonoBehaviour
 {
+    public static Floor Instance;
 
     public bool AccpetInput = true;
     public bool DetectMainTile = true;
@@ -23,6 +24,8 @@ public class Floor : MonoBehaviour
 
     private void OnEnable()
     {
+        Instance = this;
+
         EventManager.StartListening<Vector2>(EventList.OnMousePressed , MousePressed);
 
     }

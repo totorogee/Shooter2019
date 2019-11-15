@@ -8,7 +8,6 @@ public class CellUIController<T> : MonoBehaviour where T : CellUI
     public T CellTemplate;
 	protected List<T> CellTemplateList = new List<T>();
 
-    [HideInInspector]
     public List<T> CellsList = new List<T>();
 
     public bool DidInit
@@ -41,7 +40,7 @@ public class CellUIController<T> : MonoBehaviour where T : CellUI
 
     }
 
-    protected virtual void Init()
+    public virtual void Init()
     {
         CellTemplateList = new List<T>(CellListContainer.GetComponentsInChildren<T>());
 
@@ -56,7 +55,17 @@ public class CellUIController<T> : MonoBehaviour where T : CellUI
                 CellTemplate = CellTemplateList[0];
             }
         }
-        
+
+        if (CellsList != null)
+        {
+            foreach (var item in CellsList)
+            {
+                item.gameObject.SetActive(true);
+                item.Init();
+                item.MyController = this;
+            }
+        }
+
 		didInit = true;
     }
 

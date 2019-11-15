@@ -14,16 +14,18 @@ public enum GroupSettingState
 
 public class GroupSettingController : MonoBehaviour
 {
+    private Dictionary<PosVector, GameObject> PlacedMarks = new Dictionary<PosVector, GameObject>();
+    private Dictionary<PosVector, int> CurrentSelection = new Dictionary<PosVector, int>();
+
+    public List<Transform> GroupIcons = new List<Transform>();
+
     [SerializeField]
     private Floor CurrentFloor;
 
     public GroupSettingState GroupSettingState = GroupSettingState.Setting;
 
-    public int GroupSizeSelected = 2;
     public const int TotalGroup = 12;
 
-    [SerializeField]
-    private List<Tile> SeletedTiles = new List<Tile>();
 
     private Text MainText;
     private ButtonCellUI ResetButton;
@@ -37,6 +39,11 @@ public class GroupSettingController : MonoBehaviour
     private void OnEnable()
     {
         EventManager.StartListening<Tile>(EventList.TilePressed, OnTilePressed);
+    }
+
+    private void OnDisable()
+    {
+        EventManager.StopListening<Tile>(EventList.TilePressed, OnTilePressed);
     }
 
     private void Start()
@@ -86,16 +93,16 @@ public class GroupSettingController : MonoBehaviour
 
             case GroupSettingState.Setting:
 
-                if (TotalGroup - SeletedTiles.Count > 0)
+                if (TotalGroup - UnitPlaced() > 0)
                 {
-                    MainText.text = "Place Unit on Screen. Units Reminded : " + (TotalGroup - SeletedTiles.Count);
+                    MainText.text = "Place Unit on Screen. Units Reminded : " + (TotalGroup - UnitPlaced());
                 }
                 else
                 {
                     MainText.text = "Choose a Slot to save ";
                 }
 
-                ResetButton.Text.text = SeletedTiles.Count > 0 ? " Reset" : "";
+                ResetButton.Text.text = UnitPlaced() > 0 ? " Reset" : "";
 
                 break;
             case GroupSettingState.Done:
@@ -105,14 +112,11 @@ public class GroupSettingController : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-        EventManager.StopListening<Tile>(EventList.TilePressed, OnTilePressed);
-    }
+
 
     private void OnSlotPressed( int ID)
     {
-        if (TotalGroup - SeletedTiles.Count > 0 || GroupSettingState == GroupSettingState.View)
+        if (TotalGroup - UnitPlaced() > 0 || GroupSettingState == GroupSettingState.View)
         {
             if (SavedFormationList[ID].Used)
             {
@@ -129,23 +133,30 @@ public class GroupSettingController : MonoBehaviour
         }
     }
 
+    private void PlaceMark(PosVector pos , int size )
+    {
+        GameObject Go = Instantiate(GroupIcons[size], CurrentFloor.transform).gameObject;
+        Go.transform.localPosition = Floor.Instance.GetTileByPos(pos).TileObject.transform.localPosition;
+
+        PlacedMarks.Add(pos , Go);
+        CurrentSelection.Add(pos , size);
+    }
+
+    private void PlaceMarks(Dictionary<PosVector, int> data)
+    {
+        foreach (var item in data)
+        {
+            PlaceMark(item.Key, item.Value);
+        }
+    }
+
     private void LoadSlot(int ID)
     {
         Reset();
 
-        List<PosVector> pos = SavedFormationList[ID].Posistions;
-        SeletedTiles = new List<Tile>();
+        Dictionary<PosVector, int> pos = SavedFormationList[ID].PositionGroupSizePair;
 
-        foreach (var item in pos)
-        {
-            SeletedTiles.Add(CurrentFloor.GetTileByPos(item));
-        }
-
-        foreach (var item in SeletedTiles)
-        {
-            item.TileObject.SetActive(false);
-        }
-
+        PlaceMarks(pos);
         GroupSettingState = GroupSettingState.View;
     }
 
@@ -156,13 +167,7 @@ public class GroupSettingController : MonoBehaviour
             return;
         }
 
-        List<PosVector> pos = new List<PosVector>();
-        foreach (var item in SeletedTiles)
-        {
-            pos.Add(item.Position);
-        }
-
-        SavedFormationList[ID].Posistions = pos;
+        SavedFormationList[ID].PositionGroupSizePair = CurrentSelection;
         SavedFormationList[ID].Used = true;
 
         SavedFormation.Update();
@@ -173,6 +178,9 @@ public class GroupSettingController : MonoBehaviour
 
     private void OnTilePressed(Tile tile)
     {
+        PosVector pos = tile.Position;
+        int size = GroupSettingSceneUIController.Instance.CurrentGroupIconID;
+
         if (GroupSettingState != GroupSettingState.Setting)
         {
             return;
@@ -180,15 +188,19 @@ public class GroupSettingController : MonoBehaviour
 
         if (tile.IsMainTile )
         {
-            if (tile.TileObject.activeSelf && SeletedTiles.Count < TotalGroup)
+            if ( !CurrentSelection.ContainsKey(pos) && UnitPlaced() < TotalGroup)
             {
-                SeletedTiles.Add(tile);
-                tile.TileObject.SetActive(!tile.TileObject.activeSelf);
+                CurrentSelection.Add(pos, size);
+                GameObject Go = Instantiate(GroupIcons[size] , CurrentFloor.transform).gameObject;
+                Go.transform.localPosition = tile.TileObject.transform.localPosition;
+                PlacedMarks.Add(pos, Go);
+
             }
-            else if (SeletedTiles.Contains(tile))
+            else if (CurrentSelection.ContainsKey(pos))
             {
-                SeletedTiles.Remove(tile);
-                tile.TileObject.SetActive(!tile.TileObject.activeSelf);
+                CurrentSelection.Remove(pos);
+                Destroy(PlacedMarks[pos]);
+                PlacedMarks.Remove(pos);
             }
         }
     }
@@ -211,12 +223,26 @@ public class GroupSettingController : MonoBehaviour
 
     private void Reset()
     {
-        foreach (var item in SeletedTiles)
+        foreach (var item in PlacedMarks)
         {
-            item.TileObject.SetActive(true);
+            Destroy(item.Value);
         }
-        SeletedTiles = new List<Tile>();
+
+        PlacedMarks = new Dictionary<PosVector, GameObject>();
+        CurrentSelection = new Dictionary<PosVector, int>();
 
         GroupSettingState = GroupSettingState.Setting;
+    }
+
+    private int UnitPlaced()
+    {
+        int result = 0;
+
+        foreach (var item in CurrentSelection)
+        {
+            result += item.Value;
+        }
+
+        return result;
     }
 }
