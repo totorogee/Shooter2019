@@ -24,7 +24,7 @@ public class GroupSettingController : MonoBehaviour
 
     public GroupSettingState GroupSettingState = GroupSettingState.Setting;
 
-    public const int TotalGroup = 12;
+    public const int TotalGroup = 36;
 
 
     private Text MainText;
@@ -242,7 +242,7 @@ public class GroupSettingController : MonoBehaviour
 
         foreach (var item in CurrentSelection)
         {
-            result += item.Value;
+            result += item.Value+1;
         }
 
         return result;
