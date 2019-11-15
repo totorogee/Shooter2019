@@ -22,11 +22,15 @@ public class SavedFormation
             Init();
         }
 
-        List<Dictionary<PosVector, int>> saveData = new List<Dictionary<PosVector, int>>();
+        List<List<KeyValuePair<PosVector, int>>> saveData = new List<List<KeyValuePair<PosVector, int>>>();
 
         for (int i = 0; i < SavedList.Count; i++)
         {
-            saveData.Add(SavedList[i].PositionGroupSizePair);
+            saveData.Add(new List<KeyValuePair<PosVector, int>>());
+            foreach (var item in SavedList[i].PositionGroupSizePair)
+            {
+                saveData[i].Add(item);
+            }
         }
 
         SaveDataController.Save(DataName.SavedFormation, saveData);
@@ -34,12 +38,25 @@ public class SavedFormation
 
     public static void Init()
     {
+
         DidInit = true;
-        SaveDataController.TryLoad(DataName.SavedFormation, out List<Dictionary<PosVector, int>> loadedData);
+        List<Dictionary<PosVector, int>> loadedData = new List<Dictionary<PosVector, int>>();
+
+        if ( SaveDataController.TryLoad(DataName.SavedFormation, out List<List<KeyValuePair<PosVector, int>>> loadedRawData))
+        {
+            for (int i = 0; i < loadedRawData.Count; i++)
+            {
+                loadedData.Add(new Dictionary<PosVector, int>());
+                foreach (var item in loadedRawData[i])
+                {
+                    loadedData[i].Add(item.Key, item.Value);
+                }
+            }
+        }
 
         SavedList = new List<SavedFormation>();
 
-        if (loadedData == null)
+        if (loadedData == null || loadedData.Count == 0)
         {
             loadedData = new List<Dictionary<PosVector, int>>();
             for (int i = 0; i < AllowedCount; i++)

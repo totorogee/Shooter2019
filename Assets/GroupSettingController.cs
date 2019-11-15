@@ -57,6 +57,8 @@ public class GroupSettingController : MonoBehaviour
         SavedFormation.Init();
         SavedFormationList = SavedFormation.SavedList;
 
+        Debug.Log(SavedFormationList == null);
+
         for (int i = 0; i < SavedFormation.AllowedCount; i++)
         {
             var button = UIController.TopRightMenu.AddCell();
