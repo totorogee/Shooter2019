@@ -55,8 +55,6 @@ public class SaveDataController : PrefabSingleton<SaveDataController>
         {
             string JsonString = PlayerPrefs.GetString(key, "");
 
-            Debug.Log(JsonString);
-
             dataOut = JsonConvert.DeserializeObject<T>(JsonString);
             SavedData.Add(key, dataOut);
             return true;
@@ -83,9 +81,6 @@ public class SaveDataController : PrefabSingleton<SaveDataController>
         }
 
         string JsonString = JsonConvert.SerializeObject(data);
-
-
-        Debug.Log(key + " / " + JsonString);
 
         PlayerPrefs.SetString(key, JsonString);
     }

@@ -9,7 +9,6 @@ public class GroupSettingSceneUIController : MonoBehaviour
 {
     public int CurrentGroupIconID = 0;
 
-
     public TouchEvent BackGround;
 
     public static GroupSettingSceneUIController Instance;
@@ -17,6 +16,7 @@ public class GroupSettingSceneUIController : MonoBehaviour
     public ButtonCellUIController MainMenu;
     public ButtonCellUIController TopRightMenu;
     public IconCellUIController BottonMenu;
+    public Slider DensitySlider;
 
     public Text MainText;
 

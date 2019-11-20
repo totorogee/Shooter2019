@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "FloorSettingData", menuName = "GameSettingData/FloorSetting", order = 52)]
-public class FloorSetting : ScriptableObject
+[CreateAssetMenu(fileName = "FloorSettingData", menuName = "GameSettingData/FloorSettings", order = 52)]
+public class FloorSettings : ScriptableObject
 {
     [SerializeField]
     private int groundWidth = 201;

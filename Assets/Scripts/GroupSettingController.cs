@@ -14,6 +14,9 @@ public enum GroupSettingState
 
 public class GroupSettingController : MonoBehaviour
 {
+    [SerializeField]
+    private Transform UnitMarksContainer;
+
     private Dictionary<PosVector, GameObject> PlacedMarks = new Dictionary<PosVector, GameObject>();
     private Dictionary<PosVector, int> CurrentSelection = new Dictionary<PosVector, int>();
 
@@ -24,8 +27,9 @@ public class GroupSettingController : MonoBehaviour
 
     public GroupSettingState GroupSettingState = GroupSettingState.Setting;
 
-    public const int TotalGroup = 36;
+    public const int TotalGroup = 48;
 
+    public float CurrentDensity = 2;
 
     private Text MainText;
     private ButtonCellUI ResetButton;
@@ -34,6 +38,8 @@ public class GroupSettingController : MonoBehaviour
 
     private List<ButtonCellUI> SavedFormationButtons = new List<ButtonCellUI>();
     private List<SavedFormation> SavedFormationList;
+
+    private Slider densitySlider;
 
 
     private void OnEnable()
@@ -57,8 +63,6 @@ public class GroupSettingController : MonoBehaviour
         SavedFormation.Init();
         SavedFormationList = SavedFormation.SavedList;
 
-        Debug.Log(SavedFormationList == null);
-
         for (int i = 0; i < SavedFormation.AllowedCount; i++)
         {
             var button = UIController.TopRightMenu.AddCell();
@@ -66,6 +70,9 @@ public class GroupSettingController : MonoBehaviour
             button.Button.onClick.AddListener( delegate { OnSlotPressed(ID); });
             SavedFormationButtons.Add(button);
         }
+
+        densitySlider = UIController.DensitySlider;
+        densitySlider.onValueChanged.AddListener(ChangeDensity);
 
         GroupSettingState = GroupSettingState.Setting;
     }
@@ -88,12 +95,17 @@ public class GroupSettingController : MonoBehaviour
         {
             case GroupSettingState.View:
 
-                ResetButton.Text.text = "Start Edit";
-                MainText.text = "Start Edit ?";
+                densitySlider.interactable = true;
+
+                ResetButton.Text.text = "Start Edit ? ";
+                MainText.text = "Start Edit / Preview with different density";
 
                 break;
 
             case GroupSettingState.Setting:
+
+                densitySlider.interactable = false;
+                ChangeDensity(2);
 
                 if (TotalGroup - UnitPlaced() > 0)
                 {
@@ -108,6 +120,9 @@ public class GroupSettingController : MonoBehaviour
 
                 break;
             case GroupSettingState.Done:
+
+                densitySlider.interactable = false;
+                ChangeDensity(2);
                 break;
             default:
                 break;
@@ -137,7 +152,7 @@ public class GroupSettingController : MonoBehaviour
 
     private void PlaceMark(PosVector pos , int size )
     {
-        GameObject Go = Instantiate(GroupIcons[size], CurrentFloor.transform).gameObject;
+        GameObject Go = Instantiate(GroupIcons[size], UnitMarksContainer).gameObject;
         Go.transform.localPosition = Floor.Instance.GetTileByPos(pos).TileObject.transform.localPosition;
 
         PlacedMarks.Add(pos , Go);
@@ -154,6 +169,7 @@ public class GroupSettingController : MonoBehaviour
 
     private void LoadSlot(int ID)
     {
+
         Reset();
 
         Dictionary<PosVector, int> pos = SavedFormationList[ID].PositionGroupSizePair;
@@ -190,13 +206,10 @@ public class GroupSettingController : MonoBehaviour
 
         if (tile.IsMainTile )
         {
+
             if ( !CurrentSelection.ContainsKey(pos) && UnitPlaced() + size +1 <= TotalGroup)
             {
-                CurrentSelection.Add(pos, size);
-                GameObject Go = Instantiate(GroupIcons[size] , CurrentFloor.transform).gameObject;
-                Go.transform.localPosition = tile.TileObject.transform.localPosition;
-                PlacedMarks.Add(pos, Go);
-
+                PlaceMark(pos, size);
             }
             else if (CurrentSelection.ContainsKey(pos))
             {
@@ -246,5 +259,20 @@ public class GroupSettingController : MonoBehaviour
         }
 
         return result;
+    }
+
+    private void ChangeDensity(float density)
+    {
+        if (density == CurrentDensity)
+        {
+            return;
+        }
+
+        CurrentDensity = density;
+
+        foreach (var item in PlacedMarks)
+        {
+            item.Value.transform.localPosition = new Vector3(item.Key.x * density / 2, item.Key.y * density / 2, item.Value.transform.localPosition.z);
+        }
     }
 }
