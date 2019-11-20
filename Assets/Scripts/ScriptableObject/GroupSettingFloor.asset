@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d20beeb1991124e3dbc12c1251aa4ac9, type: 3}
   m_Name: GroupSettingFloor
-  m_EditorClassIdentifier: Assembly-CSharp::FloorSetting
-  groundWidth: 101
-  groundHeight: 101
-  colorRadis: 6
-  centerColor: {r: 0.41189036, g: 0.41189036, b: 0.9811321, a: 1}
-  edgeColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
+  m_EditorClassIdentifier: 
+  groundWidth: 81
+  groundHeight: 81
+  colorRadis: 5
+  centerColor: {r: 1, g: 1, b: 1, a: 1}
+  edgeColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   showMainTiles: 1
-  hideSmallTiles: 1
+  hideSmallTiles: 0

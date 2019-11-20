@@ -473,7 +473,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 22
+  orthographic size: 75
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -984,8 +984,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfa4e2e7140aa4c53a938c5ccfec7273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AccpetInput: 1
-  DetectMainTile: 1
+  AccpetInput: 0
+  DetectMainTile: 0
   CenterTile:
     TileObject: {fileID: 0}
     CircularID: 0
@@ -996,7 +996,7 @@ MonoBehaviour:
     Distance: 0
     Angle: 0
     IsMainTile: 0
-  floorSetting: {fileID: 11400000, guid: 39c8739e8305e40e38a943c9037f21d7, type: 2}
+  floorSetting: {fileID: 11400000, guid: b98e0ccdb78e043b6967c84a689bc872, type: 2}
   tileSprite: {fileID: 1014688482}
   TileList: []
   CircularTileList: []

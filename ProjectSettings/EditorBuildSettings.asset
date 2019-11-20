@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SandBox/FormationSandBox.unity
-    guid: 1e67460157daf448a855a78de929854c
+    path: Assets/Scenes/GroupSettingScene.unity
+    guid: 528b41629c7a2438eb19417474a5d70a
   m_configObjects: {}
