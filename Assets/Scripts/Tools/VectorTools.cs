@@ -4,15 +4,10 @@ using UnityEngine;
 using Newtonsoft.Json;
 
 [System.Serializable]
-public class PosVector
+public struct PosVector
 {
-    public int x = 0;
-    public int y = 0;
-
-    public PosVector()
-    {
-
-    }
+    public int x;
+    public int y;
 
     public PosVector(int x , int y)
     {

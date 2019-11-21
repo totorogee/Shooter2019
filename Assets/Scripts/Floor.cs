@@ -12,7 +12,7 @@ public class Floor : MonoBehaviour
     public Tile CenterTile;
 
     [SerializeField]
-    private FloorSetting floorSetting;
+    private FloorSettings floorSetting;
 
     [SerializeField]
     private SpriteRenderer tileSprite;
@@ -107,7 +107,7 @@ public class Floor : MonoBehaviour
 
                 var color = Go.GetComponent<SpriteRenderer>().color;
 
-                color = Color.Lerp(floorSetting.CenterColor, floorSetting.EdgeColor, Mathf.CeilToInt(currentTile.Distance / floorSetting.ColorRadis) * 0.2f);
+                color = Color.Lerp(floorSetting.CenterColor, floorSetting.EdgeColor, Mathf.CeilToInt(currentTile.Distance / floorSetting.ColorRadis) * 0.15f);
 
 
                 if (isMainTile && floorSetting.ShowMainTiles)
@@ -128,7 +128,7 @@ public class Floor : MonoBehaviour
                     color.a = 0.75f;
                     Go.GetComponent<SpriteRenderer>().color = color;
                     Go.GetComponent<SpriteRenderer>().sortingOrder += 1;
-                    Go.transform.localScale = TilesSample.transform.localScale * 2;
+                    //Go.transform.localScale = TilesSample.transform.localScale * 2;
                     CenterTile = currentTile;
                 }
 
