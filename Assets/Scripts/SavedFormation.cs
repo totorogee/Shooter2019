@@ -13,8 +13,6 @@ public class SavedFormation
 	public bool Used = false;
     public Dictionary<PosVector, int> PositionGroupSizePair = new Dictionary<PosVector, int>();
 
-	//public List<PosVector> Posistions;
-
 	public static void Update()
 	{
         if (!DidInit)

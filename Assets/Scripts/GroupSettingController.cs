@@ -34,8 +34,6 @@ public class GroupSettingController : MonoBehaviour
     private Text MainText;
     private ButtonCellUI ResetButton;
 
-    //private List<ButtonCellUI> DefaultFormationSlots;
-
     private List<ButtonCellUI> SavedFormationButtons = new List<ButtonCellUI>();
     private List<SavedFormation> SavedFormationList;
 

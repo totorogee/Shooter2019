@@ -47,6 +47,8 @@ public class Floor : MonoBehaviour
         SetCircularTileList();
         Debug.Log("Set Circular Tile Time : " + (Time.realtimeSinceStartup - startingTime));
 
+        EventManager.TriggerEvent(EventList.FloorReady);
+
     }
 
     private void Update()
