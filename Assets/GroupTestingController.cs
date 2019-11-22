@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cinemachine;
 
 public class GroupTestingController : MonoBehaviour
 {
+    public CinemachineTargetGroup TargetGroup;
+
     private bool didInit = false;
     private int allowedFleet = 3;
     private List<Transform> FleetContainer = new List<Transform>();
@@ -43,6 +46,9 @@ public class GroupTestingController : MonoBehaviour
     {
         didInit = true;
 
+
+        TargetGroup.m_Targets = new CinemachineTargetGroup.Target[allowedFleet];
+
         for (int i = 0; i < allowedFleet; i++)
         {
             GameObject Go = new GameObject();
@@ -50,6 +56,10 @@ public class GroupTestingController : MonoBehaviour
             Go.transform.SetParent(transform);
             Go.transform.localPosition = new Vector3((i - 1f) *30f , -20f, 0f);
             FleetContainer.Add(Go.transform);
+
+            TargetGroup.m_Targets[i].target = Go.transform;
+            TargetGroup.m_Targets[i].weight = 1f;
+            TargetGroup.m_Targets[i].radius = 15f;
 
             CurrentDensity.Add(2f);
         }
