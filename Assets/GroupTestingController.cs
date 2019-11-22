@@ -30,6 +30,10 @@ public class GroupTestingController : MonoBehaviour
 
     private Slider densitySlider;
 
+    private VariableJoystick fullJoystick;
+    private VariableJoystick hJoystick;
+
+
     private void OnEnable()
     {
         EventManager.StartListening(EventList.FloorReady, Init);
@@ -48,7 +52,7 @@ public class GroupTestingController : MonoBehaviour
             FleetContainer.Add(Go.transform);
         }
 
-        var UIController = GroupSettingSceneUIController.Instance;
+        var UIController = GroupTestingSceneUIController.Instance;
 
         MainText = UIController.MainText;
         ResetButton = UIController.MainMenu.AddCell();
@@ -83,6 +87,9 @@ public class GroupTestingController : MonoBehaviour
             LoadSlot(0, i);
             CurrentDensity.Add(2f);
         }
+
+        fullJoystick = UIController.FullJoystick;
+        hJoystick = UIController.HJoystick;
     }
 
     private void Start()
@@ -103,7 +110,24 @@ public class GroupTestingController : MonoBehaviour
 
     }
 
-    private void UpdateUI()
+    public void FixedUpdate()
+    {
+
+        if (didInit)
+        {
+
+            var temp = FleetContainer[CurrentSelection].localPosition;
+            temp += (Vector3)(fullJoystick.Direction *5f* Time.fixedDeltaTime);
+            FleetContainer[CurrentSelection].localPosition = temp;
+
+            temp = FleetContainer[CurrentSelection].localEulerAngles;
+            temp.z -= hJoystick.Horizontal * 90f * Time.fixedDeltaTime;
+            FleetContainer[CurrentSelection].localEulerAngles = temp;
+
+        }
+    }
+
+        private void UpdateUI()
     {
         for (int i = 0; i < SavedFormationList.Count; i++)
         {

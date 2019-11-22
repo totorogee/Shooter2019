@@ -5,17 +5,18 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class GroupSettingSceneUIController : MonoBehaviour
+public class GroupTestingSceneUIController : MonoBehaviour
 {
-    public int CurrentGroupIconID = 0;
-
     public TouchEvent BackGround;
 
-    public static GroupSettingSceneUIController Instance;
+    public static GroupTestingSceneUIController Instance;
 
     public ButtonCellUIController MainMenu;
     public ButtonCellUIController TopRightMenu;
-    public IconCellUIController BottonMenu;
+    public ButtonCellUIController BottonMenu;
+    public VariableJoystick FullJoystick;
+    public VariableJoystick HJoystick;
+
     public Slider DensitySlider;
 
     public Text MainText;
@@ -49,4 +50,3 @@ public class GroupSettingSceneUIController : MonoBehaviour
     }
 
 }
-
