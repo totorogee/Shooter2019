@@ -50,6 +50,8 @@ public class GroupTestingController : MonoBehaviour
             Go.transform.SetParent(transform);
             Go.transform.localPosition = new Vector3((i - 1f) *30f , -20f, 0f);
             FleetContainer.Add(Go.transform);
+
+            CurrentDensity.Add(2f);
         }
 
         var UIController = GroupTestingSceneUIController.Instance;
@@ -85,7 +87,7 @@ public class GroupTestingController : MonoBehaviour
         for (int i = 0; i < allowedFleet; i++)
         {
             LoadSlot(0, i);
-            CurrentDensity.Add(2f);
+
         }
 
         fullJoystick = UIController.FullJoystick;
@@ -148,6 +150,8 @@ public class GroupTestingController : MonoBehaviour
         Reset(fleetID);
         Dictionary<PosVector, int> pos = SavedFormationList[ID].PositionGroupSizePair;
         PlaceUnits(pos , fleetID);
+
+        ChangeDensity();
     }
 
     private void OnSlotPressed(int ID)
@@ -211,14 +215,14 @@ public class GroupTestingController : MonoBehaviour
 
     }
 
+    private void ChangeDensity()
+    {
+        ChangeDensity(CurrentDensity[CurrentSelection]);
+    }
+
     private void ChangeDensity(float density)
     {
         int fleetID = CurrentSelection;
-
-        if (density == CurrentDensity[fleetID])
-        {
-            return;
-        }
 
         CurrentDensity[fleetID] = density;
 
