@@ -6,6 +6,8 @@ using Cinemachine;
 
 public class GroupTestingController : MonoBehaviour
 {
+    public Transform DummyEnemy;
+
     public CinemachineTargetGroup TargetGroup;
 
     private bool didInit = false;
@@ -24,6 +26,7 @@ public class GroupTestingController : MonoBehaviour
 
     private Text MainText;
     private ButtonCellUI ResetButton;
+    private ButtonCellUI SendEnemyButton;
 
     private List<ButtonCellUI> SavedFormationButtons = new List<ButtonCellUI>();
     private List<ButtonCellUI> ChangeFleetButtons = new List<ButtonCellUI>();
@@ -70,6 +73,10 @@ public class GroupTestingController : MonoBehaviour
         ResetButton = UIController.MainMenu.AddCell();
         ResetButton.Text.text = "Reset";
         ResetButton.Button.onClick.AddListener(OnResetPressed);
+
+        SendEnemyButton = UIController.MainMenu.AddCell();
+        SendEnemyButton.Text.text = "Send Enemy";
+        SendEnemyButton.Button.onClick.AddListener(OnSendEnemyPressed);
 
         SavedFormation.Init();
         SavedFormationList = SavedFormation.SavedList;
@@ -204,6 +211,11 @@ public class GroupTestingController : MonoBehaviour
     private void OnResetPressed()
     {
 
+    }
+
+    private void OnSendEnemyPressed()
+    {
+        Instantiate(DummyEnemy);
     }
 
     private void Reset(int fleetID)
