@@ -11,16 +11,15 @@ public enum UnitBaseState
 
 public class UnitBase : MonoBehaviour
 {
+    public float HP = 100; //
+    public float HPMax = 100;
+    public float Recover = 20; //
+    public UnitBaseState UnitState = UnitBaseState.Nil;
+
+
     public static Color DamageColor = Color.blue;
     public static Color NormalColor = Color.red;
     public Transform Body;
-
-
-    public float HP = 100;
-    public float HPMax = 100;
-    public float Recover = 20;
-
-    public UnitBaseState UnitState = UnitBaseState.Nil;
 
     public void Update()
     {

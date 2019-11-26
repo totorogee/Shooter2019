@@ -8,24 +8,36 @@ public enum TeamName
     Blue =1
 }
 
+[System.Serializable]
+public class UnitBasePosition
+{
+    public List<Vector2> Position = new List<Vector2>();
+}
+
 public class UnitGroup : MonoBehaviour
 {
-    public List<UnitBase> Bases = new List<UnitBase>();
 
     public static List<UnitGroup> AllRed = new List<UnitGroup>();
     public static List<UnitGroup> AllBlue = new List<UnitGroup>();
 
+    public UnitGroupSetting Setting;
+
+    public List<UnitGroup> LinkedGroup;
+
+    public PosVector PositionInGroup; // TODO
+    public PosVector WorldPosition; // use transform.position
+
+    public List<UnitBase> UnitBases = new List<UnitBase>();
+    [SerializeField]
+    public List<UnitBasePosition> UnitBasePositions = new List<UnitBasePosition>();
+
     public LineRenderer AttackLine;
-
-
     public TeamName MyTeam = TeamName.Red;
+    public float GroupDamagePool = 2; //
+    public float GroupShareMinHP = 10; //
 
 
-    public float GroupDamagePool = 2;
-    public float GroupShareMinHP = 10;
-
-
-    private float AttackRange = 20f;
+    private float AttackRange = 30f;
     private float AttackDamage = 10f;
 
     private bool didInit;
@@ -66,19 +78,19 @@ public class UnitGroup : MonoBehaviour
             AllBlue.Add(this);
         }
 
-        Bases = new List<UnitBase>(GetComponentsInChildren<UnitBase>());
+        UnitBases = new List<UnitBase>(GetComponentsInChildren<UnitBase>());
     }
 
     public void TakeDamage(float damage)
     {
-        if (Bases.Count == 0)
+        if (UnitBases.Count == 0)
         {
             Debug.Log("Error");
         }
 
-        foreach (var item in Bases)
+        foreach (var item in UnitBases)
         {
-            item.TakeDamage(damage / Bases.Count);
+            item.TakeDamage(damage / UnitBases.Count);
         }
     }
 

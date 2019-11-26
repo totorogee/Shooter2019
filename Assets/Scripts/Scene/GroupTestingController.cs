@@ -57,7 +57,7 @@ public class GroupTestingController : MonoBehaviour
             GameObject Go = new GameObject();
             Go.name = "Fleet_" + i;
             Go.transform.SetParent(transform);
-            Go.transform.localPosition = new Vector3((i - 1f) *30f , -20f, 0f);
+            Go.transform.localPosition = new Vector3((i - 1f) * 30f, -20f, 0f);
             FleetContainer.Add(Go.transform);
 
             TargetGroup.m_Targets[i].target = Go.transform;
@@ -136,7 +136,7 @@ public class GroupTestingController : MonoBehaviour
         {
 
             var temp = FleetContainer[CurrentSelection].localPosition;
-            temp += (Vector3)(fullJoystick.Direction *5f* Time.fixedDeltaTime);
+            temp += (Vector3)(fullJoystick.Direction * 5f * Time.fixedDeltaTime);
             FleetContainer[CurrentSelection].localPosition = temp;
 
             temp = FleetContainer[CurrentSelection].localEulerAngles;
@@ -146,7 +146,7 @@ public class GroupTestingController : MonoBehaviour
         }
     }
 
-        private void UpdateUI()
+    private void UpdateUI()
     {
         for (int i = 0; i < SavedFormationList.Count; i++)
         {
@@ -162,12 +162,11 @@ public class GroupTestingController : MonoBehaviour
         }
     }
 
-    private void LoadSlot(int ID , int fleetID)
+    private void LoadSlot(int ID, int fleetID)
     {
         Reset(fleetID);
         Dictionary<PosVector, int> pos = SavedFormationList[ID].PositionGroupSizePair;
-        PlaceUnits(pos , fleetID);
-
+        PlaceUnits(pos, fleetID);
         ChangeDensity();
     }
 
@@ -181,20 +180,20 @@ public class GroupTestingController : MonoBehaviour
         CurrentSelection = ID;
     }
 
-    private void PlaceUnit(PosVector pos, int size , int fleetID)
+    private void PlaceUnit(PosVector pos, int size, int fleetID)
     {
         if (fleetID >= allowedFleet)
         {
             fleetID %= allowedFleet;
         }
 
-        GameObject Go = Instantiate(GroupIcons[size], FleetContainer[fleetID] ).gameObject;
+        GameObject Go = Instantiate(GroupIcons[size], FleetContainer[fleetID]).gameObject;
         Go.transform.localPosition = Floor.Instance.GetTileByPos(pos).TileObject.transform.localPosition;
 
         PlacedUnits[fleetID].Add(pos, Go);
     }
 
-    private void PlaceUnits(Dictionary<PosVector, int> data , int fleetID)
+    private void PlaceUnits(Dictionary<PosVector, int> data, int fleetID)
     {
         if (fleetID >= allowedFleet)
         {
@@ -203,7 +202,7 @@ public class GroupTestingController : MonoBehaviour
 
         foreach (var item in data)
         {
-            PlaceUnit(item.Key, item.Value , fleetID);
+            PlaceUnit(item.Key, item.Value, fleetID);
         }
     }
 

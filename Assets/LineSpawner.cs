@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LineSpawner : Spawner
+public class LineSpawner : Spawnable
 {
     public LineRenderer LineRenderer;
     public Transform LineEndPoint;

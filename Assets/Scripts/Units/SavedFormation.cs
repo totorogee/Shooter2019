@@ -36,7 +36,6 @@ public class SavedFormation
 
     public static void Init()
     {
-
         DidInit = true;
         List<Dictionary<PosVector, int>> loadedData = new List<Dictionary<PosVector, int>>();
 

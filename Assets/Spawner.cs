@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+public class Spawnable : MonoBehaviour
 {
     public Transform Body;
     public Vector3 StartPos = Vector3.zero;

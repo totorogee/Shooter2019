@@ -48,12 +48,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2031ef7829f041bda6aef708e0713ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bases: []
+  LinkedGroup: []
+  PositionInGroup:
+    x: 0
+    y: 0
+  WorldPosition:
+    x: 0
+    y: 0
+  UnitBases: []
+  UnitBasePositions:
+  - Position:
+    - {x: 0, y: 0}
+  - Position: []
+  - Position: []
+  - Position: []
+  Weapons:
+  - {fileID: 0}
   AttackLine: {fileID: 1543150874}
   MyTeam: 0
   GroupDamagePool: 2
   GroupShareMinHP: 10
-  Damage: 10
 --- !u!120 &1543150874
 LineRenderer:
   m_ObjectHideFlags: 0

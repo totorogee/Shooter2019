@@ -25,6 +25,9 @@ public class WeaponSettings : ScriptableObject
     private int blockRangePenalty = 2;
     public int BlockRangePenalty => blockRangePenalty;
 
+    public Spawnable WarnningEffect;
+    public Spawnable ShootingEffect;
+
     private void OnEnable()
 	{
 
