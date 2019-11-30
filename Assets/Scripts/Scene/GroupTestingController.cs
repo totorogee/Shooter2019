@@ -83,7 +83,7 @@ public class GroupTestingController : MonoBehaviour
             unitFleet.TheGroup.transform.position = new Vector3((i - 1f) * 30f, -20f, 0f);
 
 
-            TargetGroup.m_Targets[i].target = Go.transform;
+            TargetGroup.m_Targets[i].target = unitFleet.TheGroup;
             TargetGroup.m_Targets[i].weight = 1f;
             TargetGroup.m_Targets[i].radius = 15f;
 
