@@ -12,17 +12,8 @@ public class GroupTestingController : MonoBehaviour
 
     private bool didInit = false;
     private int allowedFleet = 3;
-    private List<Transform> FleetContainer = new List<Transform>();
-
-    private List<Dictionary<PosVector, GameObject>> PlacedUnits = new List<Dictionary<PosVector, GameObject>>();
 
     public int CurrentSelection = 0;
-
-    public List<Transform> GroupIcons = new List<Transform>();
-
-    public const int TotalGroup = 48;
-
-    public List<float> CurrentDensity = new List<float>();
 
     private Text MainText;
     private ButtonCellUI ResetButton;
@@ -31,8 +22,6 @@ public class GroupTestingController : MonoBehaviour
     private List<ButtonCellUI> SavedFormationButtons = new List<ButtonCellUI>();
     private List<ButtonCellUI> ChangeFleetButtons = new List<ButtonCellUI>();
 
-
-    private List<SavedFormation> SavedFormationList;
 
     private Slider densitySlider;
 
@@ -49,23 +38,9 @@ public class GroupTestingController : MonoBehaviour
     {
         didInit = true;
 
-
         TargetGroup.m_Targets = new CinemachineTargetGroup.Target[allowedFleet];
 
-        for (int i = 0; i < allowedFleet; i++)
-        {
-            GameObject Go = new GameObject();
-            Go.name = "Fleet_" + i;
-            Go.transform.SetParent(transform);
-            Go.transform.localPosition = new Vector3((i - 1f) * 30f, -20f, 0f);
-            FleetContainer.Add(Go.transform);
 
-            TargetGroup.m_Targets[i].target = Go.transform;
-            TargetGroup.m_Targets[i].weight = 1f;
-            TargetGroup.m_Targets[i].radius = 15f;
-
-            CurrentDensity.Add(2f);
-        }
 
         var UIController = GroupTestingSceneUIController.Instance;
 
@@ -77,9 +52,6 @@ public class GroupTestingController : MonoBehaviour
         SendEnemyButton = UIController.MainMenu.AddCell();
         SendEnemyButton.Text.text = "Send Enemy";
         SendEnemyButton.Button.onClick.AddListener(OnSendEnemyPressed);
-
-        SavedFormation.Init();
-        SavedFormationList = SavedFormation.SavedList;
 
         for (int i = 0; i < SavedFormation.AllowedCount; i++)
         {
@@ -103,7 +75,17 @@ public class GroupTestingController : MonoBehaviour
 
         for (int i = 0; i < allowedFleet; i++)
         {
-            LoadSlot(0, i);
+            GameObject Go = Instantiate(UnitController.Instance.UnitFleetPrefab.gameObject);
+            UnitFleet unitFleet = Go.GetComponent<UnitFleet>();
+            unitFleet.Init(0);
+
+            Go.name = "Fleet_" + i;
+            unitFleet.TheGroup.transform.position = new Vector3((i - 1f) * 30f, -20f, 0f);
+
+
+            TargetGroup.m_Targets[i].target = Go.transform;
+            TargetGroup.m_Targets[i].weight = 1f;
+            TargetGroup.m_Targets[i].radius = 15f;
 
         }
 
@@ -131,27 +113,25 @@ public class GroupTestingController : MonoBehaviour
 
     public void FixedUpdate()
     {
-
         if (didInit)
         {
-
-            var temp = FleetContainer[CurrentSelection].localPosition;
+            var temp = UnitFleet.AllRed[CurrentSelection].TheGroup.localPosition;
             temp += (Vector3)(fullJoystick.Direction * 5f * Time.fixedDeltaTime);
-            FleetContainer[CurrentSelection].localPosition = temp;
+            UnitFleet.AllRed[CurrentSelection].TheGroup.localPosition = temp;
 
-            temp = FleetContainer[CurrentSelection].localEulerAngles;
+            temp = UnitFleet.AllRed[CurrentSelection].TheGroup.localEulerAngles;
             temp.z -= hJoystick.Horizontal * 90f * Time.fixedDeltaTime;
-            FleetContainer[CurrentSelection].localEulerAngles = temp;
+            UnitFleet.AllRed[CurrentSelection].TheGroup.localEulerAngles = temp;
 
         }
     }
 
     private void UpdateUI()
     {
-        for (int i = 0; i < SavedFormationList.Count; i++)
+        for (int i = 0; i < UnitFleet.AllRed.Count; i++)
         {
             var button = SavedFormationButtons[i];
-            var data = SavedFormationList[i];
+            var data = SavedFormation.SavedList[i];
             button.Text.text = data.Used ? data.Name : data.Name + " (Empty Slot)";
         }
 
@@ -162,50 +142,15 @@ public class GroupTestingController : MonoBehaviour
         }
     }
 
-    private void LoadSlot(int ID, int fleetID)
-    {
-        Reset(fleetID);
-        Dictionary<PosVector, int> pos = SavedFormationList[ID].PositionGroupSizePair;
-        PlaceUnits(pos, fleetID);
-        ChangeDensity();
-    }
-
     private void OnSlotPressed(int ID)
     {
-        LoadSlot(ID, CurrentSelection);
+        //LoadSlot(ID, CurrentSelection);
     }
 
     private void OnFleetSelection(int ID)
     {
         CurrentSelection = ID;
     }
-
-    private void PlaceUnit(PosVector pos, int size, int fleetID)
-    {
-        if (fleetID >= allowedFleet)
-        {
-            fleetID %= allowedFleet;
-        }
-
-        GameObject Go = Instantiate(GroupIcons[size], FleetContainer[fleetID]).gameObject;
-        Go.transform.localPosition = Floor.Instance.GetTileByPos(pos).TileObject.transform.localPosition;
-
-        PlacedUnits[fleetID].Add(pos, Go);
-    }
-
-    private void PlaceUnits(Dictionary<PosVector, int> data, int fleetID)
-    {
-        if (fleetID >= allowedFleet)
-        {
-            fleetID %= allowedFleet;
-        }
-
-        foreach (var item in data)
-        {
-            PlaceUnit(item.Key, item.Value, fleetID);
-        }
-    }
-
 
     private void OnResetPressed()
     {
@@ -217,39 +162,20 @@ public class GroupTestingController : MonoBehaviour
         Instantiate(DummyEnemy);
     }
 
-    private void Reset(int fleetID)
-    {
-        for (int i = 0; i < allowedFleet; i++)
-        {
-            if (PlacedUnits.Count <= i)
-            {
-                PlacedUnits.Add(new Dictionary<PosVector, GameObject>());
-            }
-        }
-
-        foreach (var item in PlacedUnits[fleetID])
-        {
-            Destroy(item.Value);
-        }
-
-        PlacedUnits[fleetID] = new Dictionary<PosVector, GameObject>();
-
-    }
-
     private void ChangeDensity()
     {
-        ChangeDensity(CurrentDensity[CurrentSelection]);
+        //ChangeDensity(CurrentDensity[CurrentSelection]);
     }
 
     private void ChangeDensity(float density)
     {
-        int fleetID = CurrentSelection;
+        //int fleetID = CurrentSelection;
 
-        CurrentDensity[fleetID] = density;
+        //CurrentDensity[fleetID] = density;
 
-        foreach (var item in PlacedUnits[fleetID])
-        {
-            item.Value.transform.localPosition = new Vector3(item.Key.x * density / 2, item.Key.y * density / 2, item.Value.transform.localPosition.z);
-        }
+        //foreach (var item in PlacedUnits[fleetID])
+        //{
+        //    item.Value.transform.localPosition = new Vector3(item.Key.x * density / 2, item.Key.y * density / 2, item.Value.transform.localPosition.z);
+        //}
     }
 }

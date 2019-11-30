@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a56b5a59eca094b6096982958b1cd193, type: 3}
+  m_Name: UnitGroupSettingData
+  m_EditorClassIdentifier: 
+  TurnSpeed: 1
+  FSpeed: 1
+  RLSpeed: 0.5
+  BSpeed: 0.7
+  TurnAcc: 1
+  MoveAcc: 1
+  displaySize: 0.7
+  unitBase: {fileID: 0}
+  HPMax: 100
+  Recover: 20
+  HPUnitSharing: 10
+  HPGroupSharing: 2
+  HPSharingMin: 20
+  Weapons:
+  - {fileID: 11400000, guid: 8c3a12c979fa441d2b570a1bbf8c3203, type: 2}
+  GroupOfOne: {fileID: 1641677521573948058, guid: b4900a256d2d744ee93660ef55504cb8,
+    type: 3}
+  GroupOfTwo: {fileID: 1670558256288301910, guid: ce3ec03362e184710b61be000bdf2ba6,
+    type: 3}
+  GroupOfThree: {fileID: 8113273991834579614, guid: 0b6f579709dc64ad29bf93ea30a694aa,
+    type: 3}
+  GroupOfFour: {fileID: 5586690066569356370, guid: 95b173df090a84079bca73ea36e2f34e,
+    type: 3}

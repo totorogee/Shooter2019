@@ -6,58 +6,64 @@ using UnityEngine;
 public class UnitGroupSetting : ScriptableObject
 {
 
-    [Header ("Unit Base Setting")]
+    [Header("Movement Setting")]
+    public float TurnSpeed = 1f;
+    public float FSpeed = 1f;
+    public float RLSpeed = 0.5f;
+    public float BSpeed = 0.7f;
 
-    public float HP = 100;
+    public float TurnAcc = 1f;
+    public float MoveAcc = 1f;
+
+    public float displaySize = 0.7f;
+
+    [Header("Unit Base Setting")]
+    public UnitBase unitBase;
+    public float HPMax = 100;
     public float Recover = 20;
     public float HPUnitSharing = 10;
     public float HPGroupSharing = 2;
     public float HPSharingMin = 20;
 
-    // moving speed x 4
-
     [Header ("Unit Group Setting")]
-
     public List<WeaponSettings> Weapons = new List<WeaponSettings>();
 
-    [SerializeField]
-    private int groundWidth = 201;
-    public int GroundWidth => groundWidth;
+    [Header("Unit In Group Position Setting")]
+    public Transform GroupOfOne;
+    public Transform GroupOfTwo;
+    public Transform GroupOfThree;
+    public Transform GroupOfFour;
 
-    [SerializeField]
-    private int groundHeight = 201;
-    public int GroundHeight => groundHeight;
-
-    [SerializeField]
-    private int colorRadis = 5;
-    public int ColorRadis => colorRadis;
-
-    [SerializeField]
-    private Color centerColor = Color.blue;
-    public Color CenterColor => centerColor;
-
-    [SerializeField]
-    private Color edgeColor = Color.gray;
-    public Color EdgeColor => edgeColor;
-
-    [SerializeField]
-    private bool showMainTiles = true;
-    public bool ShowMainTiles => showMainTiles;
-
-    [SerializeField]
-    private bool hideSmallTiles = false;
-    public bool HideSmallTiles => hideSmallTiles;
+    public List<List<Vector3>> GroupPosition; 
 
     private void OnEnable()
     {
-        if (groundWidth % 2 == 0)
+        if (GroupOfOne.childCount != 1 || GroupOfTwo.childCount !=2 || GroupOfThree.childCount !=3 || GroupOfFour.childCount != 4)
         {
-            groundWidth += 1;
+            Debug.Log("Error on setup Group Postiton");
         }
+        else
+        {
+            GroupPosition = new List<List<Vector3>>
+            {
+                GetChildPositions(GroupOfOne),
+                GetChildPositions(GroupOfTwo),
+                GetChildPositions(GroupOfThree),
+                GetChildPositions(GroupOfFour)
+            };
+        }
+    }
 
-        if (groundHeight % 2 == 0)
+    private List<Vector3> GetChildPositions(Transform transform)
+    {
+        List<Vector3> result = new List<Vector3>();
+        //var children = transform.GetComponentsInChildren<Transform>();
+
+        //Debug.Log(children.Length);
+        for (int i = 0; i < transform.childCount ; i++)
         {
-            groundHeight += 1;
+            result.Add(transform.GetChild(i).localPosition);
         }
+        return result;
     }
 }

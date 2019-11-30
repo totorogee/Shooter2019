@@ -5,7 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "WeaponSettingData", menuName = "GameSettingData/WeaponSettings", order = 51)]
 public class WeaponSettings : ScriptableObject
 {
-	[SerializeField]
+    [SerializeField]
+    private string weaponName = "";
+    public string WeaponName => weaponName;
+
+    [SerializeField]
 	private int range = 20;
 	public int Range => range;
 
