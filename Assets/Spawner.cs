@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Spawnable : MonoBehaviour
@@ -69,18 +70,19 @@ public class Spawnable : MonoBehaviour
         EventManager.StartListening(eventName, Disappear);
     }
 
-    public virtual void SetStartPosition(Vector3 pos)
+    public virtual void OnSpawn(Vector3 Start , Vector3 End , float startTime = 0f , float endTime = 1f)
     {
-
-    }
-
-    public virtual void SetEndPosition(Vector3 pos)
-    {
-
+        StartPos = Start;
+        EndPos = End;
+        OnSpawn(startTime, endTime);
     }
 
     public virtual void OnSpawn(float startTime = 0, float endTime = 1f)
     {
+
+        PrefabAssetType prefabType = PrefabUtility.GetPrefabAssetType(this);
+        Debug.Log(prefabType.ToString());
+
         Disappear();
 
         Body.localPosition = StartPos;
@@ -110,16 +112,7 @@ public class Spawnable : MonoBehaviour
         }
 
         disappearCoroutine = StartCoroutine(DelayDisappear(startTime + endTime));
-
-        //if (StartPos != EndPos)
-        //{
-            moveCoroutine = StartCoroutine(DelayMove(startTime, endTime));
-        //}
-        //else
-        //{
-        //    Body.localPosition = StartPos;
-        //}
-
+        moveCoroutine = StartCoroutine(DelayMove(startTime, endTime));
     }
 
     protected virtual IEnumerator DelayAppear(float time)
