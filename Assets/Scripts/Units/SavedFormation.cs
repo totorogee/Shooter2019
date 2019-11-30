@@ -5,7 +5,19 @@ using UnityEngine;
 public class SavedFormation
 {
 	public static int AllowedCount = 3;
-	public static List<SavedFormation> SavedList = new List<SavedFormation>();
+	public static List<SavedFormation> SavedList
+    {
+        get
+        {
+            if (savedList.Count == 0)
+            {
+                Init();
+            }
+            return savedList;
+        }
+    }
+
+    private static List<SavedFormation> savedList = new List<SavedFormation>();
 	public static bool DidInit = false;
 
 	public int ID = 0;
@@ -22,10 +34,10 @@ public class SavedFormation
 
         List<List<KeyValuePair<PosVector, int>>> saveData = new List<List<KeyValuePair<PosVector, int>>>();
 
-        for (int i = 0; i < SavedList.Count; i++)
+        for (int i = 0; i < savedList.Count; i++)
         {
             saveData.Add(new List<KeyValuePair<PosVector, int>>());
-            foreach (var item in SavedList[i].PositionGroupSizePair)
+            foreach (var item in savedList[i].PositionGroupSizePair)
             {
                 saveData[i].Add(item);
             }
@@ -51,7 +63,7 @@ public class SavedFormation
             }
         }
 
-        SavedList = new List<SavedFormation>();
+        savedList = new List<SavedFormation>();
 
         if (loadedData == null || loadedData.Count == 0)
         {
@@ -72,7 +84,7 @@ public class SavedFormation
                 PositionGroupSizePair = loadedData[i]
 
             };
-            SavedList.Add(formation);
+            savedList.Add(formation);
         }
 
 
