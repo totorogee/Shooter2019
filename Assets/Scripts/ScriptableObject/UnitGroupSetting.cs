@@ -18,7 +18,7 @@ public class UnitGroupSetting : ScriptableObject
     public float displaySize = 0.7f;
 
     [Header("Unit Base Setting")]
-    public UnitBase unitBase;
+
     public float HPMax = 100;
     public float Recover = 20;
     public float HPUnitSharing = 10;
@@ -34,7 +34,9 @@ public class UnitGroupSetting : ScriptableObject
     public Transform GroupOfThree;
     public Transform GroupOfFour;
 
-    public List<List<Vector3>> GroupPosition; 
+    public List<List<Vector3>> GroupPosition;
+
+    public Transform TestIcon;
 
     private void OnEnable()
     {

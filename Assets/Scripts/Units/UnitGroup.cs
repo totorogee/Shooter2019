@@ -13,14 +13,13 @@ public class UnitGroup : MonoBehaviour
     public static List<UnitGroup> AllRed = new List<UnitGroup>();
     public static List<UnitGroup> AllBlue = new List<UnitGroup>();
 
-    [HideInInspector]
     public UnitFleet Fleet;
     public UnitGroupSetting Setting;
 
-    public List<UnitGroup> LinkedGroup; // TODO
+    public List<UnitGroup> LinkedGroup; // TODO Nearest group
+    public PosVector StartingPos; // Density of 2
+    public PosVector CurrentPos; // TODO function , for Density 3 or 4
 
-    public PosVector PositionInGroup; // TODO
-    public PosVector WorldPosition; // TODO
 
     public List<UnitBase> UnitBases = new List<UnitBase>();
 
@@ -47,9 +46,10 @@ public class UnitGroup : MonoBehaviour
         }
     }
 
-    public void Init(UnitFleet fleet , int size )
+    public void Init(UnitFleet fleet , PosVector starting,  int size )
     {
         Fleet = fleet;
+        StartingPos = starting;
         if (Setting == null)
         {
             Setting = UnitController.Instance.UnitGroupSetting;
@@ -105,21 +105,4 @@ public class UnitGroup : MonoBehaviour
         }
 
     }
-
-    public void DisplayLine(LineRenderer line , Vector3 target , float time)
-    {
-        line.enabled = true;
-        line.SetPosition(0,this.transform.position);
-        line.SetPosition(1,target);
-        StartCoroutine(DelayKillLine(line, time));
-    }
-
-    private IEnumerator DelayKillLine (LineRenderer line , float time)
-    {
-        line.enabled = true;
-        yield return new WaitForSeconds(time);
-        line.enabled = false;
-
-    }
-
 }

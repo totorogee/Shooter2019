@@ -14,7 +14,10 @@ public class UnitFleet : MonoBehaviour
     public TeamName Team = TeamName.Red;
 
     public List<UnitGroup> UnitGroups = new List<UnitGroup>();
-    //public List<PosVector> Scanner = new List<PosVector>();
+    public Dictionary<PosVector, List<UnitGroup>> Scanners = new Dictionary<PosVector, List<UnitGroup>>();
+
+    private const int scannerDensity = 6;
+    public Transform TestIcon;
 
     public int CurrentFormationID;
 
@@ -23,18 +26,23 @@ public class UnitFleet : MonoBehaviour
     public void Init(int formationID)
     {
         DidInit = true;
-        //SetScanner();
+
         LoadSlot(formationID);
         if (Team == TeamName.Red)
         {
             AllRed.Add(this);
         }
-
+        SetScanner();
     }
 
-    public void ChangeDensity()
+    public void ChangeDensity(float density)
     {
-        // TODO
+        Density = density;
+
+        foreach (var item in UnitGroups)
+        {
+            item.transform.localPosition = new Vector3(item.StartingPos.x * density / 2, item.StartingPos.y * density / 2, item.transform.localPosition.z);
+        }
     }
 
     public void ChangeFormation()
@@ -44,7 +52,36 @@ public class UnitFleet : MonoBehaviour
 
     private void SetScanner()
     {
-        // TODO
+
+        Scanners = new Dictionary<PosVector, List<UnitGroup>>();
+
+        foreach (var item in UnitGroups)
+        {
+            int x = Mathf.RoundToInt ((float)item.StartingPos.x / scannerDensity );
+            int y = Mathf.RoundToInt ((float)item.StartingPos.y / scannerDensity );
+
+            if (!Scanners.ContainsKey (new PosVector(x * scannerDensity, y * scannerDensity)))
+            {
+                //Debug.Log(item.x + " " + x * scannerDensity);
+                Scanners.Add(new PosVector(x * scannerDensity, y * scannerDensity), new List<UnitGroup> { item } );
+                Transform t = Instantiate(UnitController.Instance.UnitGroupSetting.TestIcon, new Vector3(x * scannerDensity, y* scannerDensity, 0), Quaternion.identity);
+                t.SetParent(TheGroup);
+            }
+            else
+            {
+                Scanners[new PosVector(x * scannerDensity, y * scannerDensity)].Add(item);
+            }
+        }
+
+        foreach (var item in Scanners)
+        {
+            //Debug.Log(item.Key + " " + item.Value.Count);
+            foreach (var x in item.Value)
+            {
+                Debug.Log(PosVector.SqDistance(item.Key, x.StartingPos));
+            }
+
+        }
     }
 
     private void SetGroupsLinks(UnitGroup unit )
@@ -56,8 +93,10 @@ public class UnitFleet : MonoBehaviour
     {
         Reset();
         Dictionary<PosVector, int> pos = SavedFormation.SavedList[ID].PositionGroupSizePair;
+
+
         PlaceUnits(pos);
-        ChangeDensity();
+        ChangeDensity(Density);
     }
 
     private void PlaceUnits(Dictionary<PosVector, int> data )
@@ -73,7 +112,7 @@ public class UnitFleet : MonoBehaviour
         GameObject Go = Instantiate(UnitController.Instance.UnitGroupPrefab , TheGroup).gameObject;
         UnitGroup unitGroup = Go.GetComponent<UnitGroup>();
         Go.transform.localPosition = Floor.Instance.GetTileByPos(pos).TileObject.transform.localPosition;
-        unitGroup.Init(this , size);
+        unitGroup.Init(this , pos , size);
         UnitGroups.Add(unitGroup);
     }
 

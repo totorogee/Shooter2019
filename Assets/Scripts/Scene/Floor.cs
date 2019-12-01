@@ -17,8 +17,8 @@ public class Floor : MonoBehaviour
     [SerializeField]
     private SpriteRenderer tileSprite;
 
-    public List<Tile> TileList = new List<Tile>();
-    public List<Tile> CircularTileList = new List<Tile>();
+    private List<Tile> TileList = new List<Tile>();
+    private List<Tile> CircularTileList = new List<Tile>();
 
     public static Dictionary<int, Dictionary<PosVector, PosVector>> RotatedPosition = new Dictionary<int, Dictionary<PosVector, PosVector>>();
 

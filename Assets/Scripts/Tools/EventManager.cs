@@ -134,7 +134,7 @@ public class EventManager : PrefabSingleton<EventManager>
         }
         else
         {
-            Debug.LogWarning("Event not registered : " + eventName);
+//            Debug.LogWarning("Event not registered : " + eventName);
         }
     }
 

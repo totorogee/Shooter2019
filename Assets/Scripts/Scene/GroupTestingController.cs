@@ -93,6 +93,9 @@ public class GroupTestingController : MonoBehaviour
         hJoystick = UIController.HJoystick;
     }
 
+
+
+
     private void Start()
     {
 
@@ -169,13 +172,6 @@ public class GroupTestingController : MonoBehaviour
 
     private void ChangeDensity(float density)
     {
-        //int fleetID = CurrentSelection;
-
-        //CurrentDensity[fleetID] = density;
-
-        //foreach (var item in PlacedUnits[fleetID])
-        //{
-        //    item.Value.transform.localPosition = new Vector3(item.Key.x * density / 2, item.Key.y * density / 2, item.Value.transform.localPosition.z);
-        //}
+        UnitFleet.AllRed[CurrentSelection].ChangeDensity(density);
     }
 }

@@ -32,10 +32,19 @@ public struct PosVector
         return new PosVector(A.x + B.x, A.y + B.y);
     }
 
+    public static PosVector operator - (PosVector A, PosVector B)
+    {
+        return new PosVector(A.x - B.x, A.y - B.y);
+    }
+
+    public static int SqDistance (PosVector A, PosVector B)
+    {
+        return (A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y);
+    }
+
     public override string ToString()
     {
         return "x:" + x + ",y:" + y;
-        // [{"x:2,y:0":2,"x:0,y:0":2,"x:-2,y:0":2,"x:-1,y:2":2,"x:1,y:2":2,"x:1,y:-2":2},{},{}]
     }
 }
 
