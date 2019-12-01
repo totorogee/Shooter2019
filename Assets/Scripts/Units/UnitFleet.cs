@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class UnitScanner
+{
+    public PosVector StartingPos;
+    public List<UnitGroup> UnitGroups = new List<UnitGroup>();
+    public int maxDistance = 0;
+}
+
 public class UnitFleet : MonoBehaviour
 {
     public bool DidInit = false;
@@ -14,10 +22,9 @@ public class UnitFleet : MonoBehaviour
     public TeamName Team = TeamName.Red;
 
     public List<UnitGroup> UnitGroups = new List<UnitGroup>();
-    public Dictionary<PosVector, List<UnitGroup>> Scanners = new Dictionary<PosVector, List<UnitGroup>>();
+    public List<UnitScanner> UnitScanners = new List<UnitScanner>();
 
     private const int scannerDensity = 6;
-    public Transform TestIcon;
 
     public int CurrentFormationID;
 
@@ -31,6 +38,10 @@ public class UnitFleet : MonoBehaviour
         if (Team == TeamName.Red)
         {
             AllRed.Add(this);
+        }
+        else
+        {
+            AllBlue.Add(this);
         }
         SetScanner();
     }
@@ -52,35 +63,72 @@ public class UnitFleet : MonoBehaviour
 
     private void SetScanner()
     {
-
-        Scanners = new Dictionary<PosVector, List<UnitGroup>>();
+        UnitScanners = new List<UnitScanner>();
 
         foreach (var item in UnitGroups)
         {
             int x = Mathf.RoundToInt ((float)item.StartingPos.x / scannerDensity );
             int y = Mathf.RoundToInt ((float)item.StartingPos.y / scannerDensity );
 
-            if (!Scanners.ContainsKey (new PosVector(x * scannerDensity, y * scannerDensity)))
+            PosVector pos = new PosVector(x * scannerDensity, y * scannerDensity);
+            UnitScanner temp = null;
+
+            foreach (var scanner in UnitScanners)
             {
-                //Debug.Log(item.x + " " + x * scannerDensity);
-                Scanners.Add(new PosVector(x * scannerDensity, y * scannerDensity), new List<UnitGroup> { item } );
-                Transform t = Instantiate(UnitController.Instance.UnitGroupSetting.TestIcon, new Vector3(x * scannerDensity, y* scannerDensity, 0), Quaternion.identity);
+                if (scanner.StartingPos == pos )
+                {
+                    temp = scanner;
+                }
+            }
+
+            if (temp == null)
+            {
+                temp = new UnitScanner
+                {
+                    StartingPos = pos,
+                    UnitGroups = new List<UnitGroup> { item }
+                };
+
+                UnitScanners.Add(temp);
+
+                Transform t = Instantiate(UnitController.Instance.UnitGroupSetting.TestIcon, TheGroup.position + new Vector3(x * scannerDensity, y * scannerDensity, 0), TheGroup.rotation);
                 t.SetParent(TheGroup);
             }
             else
             {
-                Scanners[new PosVector(x * scannerDensity, y * scannerDensity)].Add(item);
+                temp.UnitGroups.Add(item);
             }
         }
 
-        foreach (var item in Scanners)
+        UnitScanners.Sort((x, y) =>
         {
-            //Debug.Log(item.Key + " " + item.Value.Count);
-            foreach (var x in item.Value)
-            {
-                Debug.Log(PosVector.SqDistance(item.Key, x.StartingPos));
-            }
+            return PosVector.SqDistance(new PosVector(0, 0), x.StartingPos).CompareTo
+            ( PosVector.SqDistance(new PosVector(0, 0), y.StartingPos));
+        });
 
+        foreach (var item in UnitScanners)
+        {
+            item.UnitGroups.Sort((x, y) =>
+            {
+                int result = PosVector.SqDistance(item.StartingPos, x.StartingPos).CompareTo
+                (PosVector.SqDistance(item.StartingPos, y.StartingPos));
+
+                if (result != 0)
+                {
+                    return result;
+                }
+
+                return PosVector.Angle(item.StartingPos, x.StartingPos).CompareTo
+                (PosVector.Angle(item.StartingPos, y.StartingPos));
+            });
+
+            int distance = 0;
+            for (int i = 0; i < item.UnitGroups.Count; i++)
+            {
+                var x = item.UnitGroups[i];
+                distance = Mathf.Max(PosVector.SqDistance(item.StartingPos, x.StartingPos), distance);
+            }
+            item.maxDistance = Mathf.CeilToInt(Mathf.Sqrt(distance));
         }
     }
 
@@ -89,12 +137,25 @@ public class UnitFleet : MonoBehaviour
         // TODO
     }
 
+    public void CheckAttack()
+    {
+        //if (Fleet.Team == TeamName.Red)
+        //{
+        //    foreach (var item in AllBlue)
+        //    {
+        //        if ((transform.position - item.transform.position).magnitude < AttackRange)
+        //        {
+        //            Setting.Weapons[0].ShootingEffect.OnSpawn(transform.position, item.transform.position, 0, 0.2f);
+        //            item.TakeDamage(AttackDamage);
+        //        }
+        //    }
+        //}
+    }
+
     private void LoadSlot(int ID)
     {
         Reset();
         Dictionary<PosVector, int> pos = SavedFormation.SavedList[ID].PositionGroupSizePair;
-
-
         PlaceUnits(pos);
         ChangeDensity(Density);
     }

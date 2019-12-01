@@ -27,6 +27,16 @@ public struct PosVector
         this.y = Mathf.RoundToInt(pos.y);
     }
 
+    public static bool operator == (PosVector A, PosVector B)
+    {
+        return A.x == B.x && A.y == B.y;
+    }
+
+    public static bool operator != (PosVector A, PosVector B)
+    {
+        return !(A==B);
+    }
+
     public static PosVector operator + ( PosVector A , PosVector B)
     {
         return new PosVector(A.x + B.x, A.y + B.y);
@@ -40,6 +50,20 @@ public struct PosVector
     public static int SqDistance (PosVector A, PosVector B)
     {
         return (A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y);
+    }
+
+    public static float Angle(PosVector A, PosVector B)
+    {
+        PosVector temp = B - A;
+
+        if (temp.x == 0 && temp.y == 0)
+        {
+            Debug.Log("o");
+            return 0f;
+        }
+
+        float result = Mathf.Atan2(-temp.x, -temp.y) * 180 / Mathf.PI + 180;
+        return (Mathf.Abs(result - 360) <= float.Epsilon) ? 0 : result;
     }
 
     public override string ToString()

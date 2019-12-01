@@ -25,26 +25,7 @@ public class UnitGroup : MonoBehaviour
 
     private float AttackRange = 30f; //
     private float AttackDamage = 10f; //
-
     private bool didInit;
-
-
-    private void OnEnable()
-    {
-
-    }
-
-    private void Update()
-    {
-
-        if (didInit)
-        {
-            if (Time.frameCount % 40 == 0)
-            {
-                CheckAttack();
-            }
-        }
-    }
 
     public void Init(UnitFleet fleet , PosVector starting,  int size )
     {
@@ -88,21 +69,5 @@ public class UnitGroup : MonoBehaviour
         {
             item.TakeDamage(damage / UnitBases.Count);
         }
-    }
-
-    public void CheckAttack()
-    {
-        if (Fleet.Team == TeamName.Red)
-        {
-            foreach (var item in AllBlue)
-            {
-                if ((transform.position - item.transform.position).magnitude < AttackRange)
-                {
-                    Setting.Weapons[0].ShootingEffect.OnSpawn(transform.position , item.transform.position , 0 , 0.2f);
-                    item.TakeDamage(AttackDamage);
-                }
-            }
-        }
-
     }
 }
