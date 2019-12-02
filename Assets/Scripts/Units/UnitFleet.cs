@@ -2,16 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class UnitScanner
-{
-    public PosVector StartingPos;
-    public List<UnitGroup> UnitGroups = new List<UnitGroup>();
-    public int maxDistance = 0;
-}
-
 public class UnitFleet : MonoBehaviour
 {
+    public PosVector Position
+    {
+        get
+        {
+            return new PosVector(TheGroup.localPosition);
+        }
+    }
+
+    public int Angle
+    {
+        get
+        {
+            return Mathf.RoundToInt(-TheGroup.localEulerAngles.z + 360);
+        }
+    }
+
+    public List<UnitGroup> Enemy = new List<UnitGroup>();
+
+    public int FleetRadis = 0;
+
     public bool DidInit = false;
 
     public static List<UnitFleet> AllRed = new List<UnitFleet>();
@@ -32,6 +44,8 @@ public class UnitFleet : MonoBehaviour
 
     public void Init(int formationID)
     {
+        var time = Time.realtimeSinceStartup;
+
         DidInit = true;
 
         LoadSlot(formationID);
@@ -44,6 +58,9 @@ public class UnitFleet : MonoBehaviour
             AllBlue.Add(this);
         }
         SetScanner();
+        UpdateFleetRadis();
+
+        //Debug.Log("Init Time : " + (Time.realtimeSinceStartup - time));
     }
 
     public void ChangeDensity(float density)
@@ -63,7 +80,13 @@ public class UnitFleet : MonoBehaviour
 
     private void SetScanner()
     {
-        UnitScanners = new List<UnitScanner>();
+        GameObject Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject);
+        UnitScanner temp = Go.GetComponent<UnitScanner>();
+        temp.Fleet = this;
+        temp.StartingPos = new PosVector(0, 0);
+        temp.UnitGroups = new List<UnitGroup>();
+
+        UnitScanners = new List<UnitScanner> { temp };
 
         foreach (var item in UnitGroups)
         {
@@ -71,7 +94,7 @@ public class UnitFleet : MonoBehaviour
             int y = Mathf.RoundToInt ((float)item.StartingPos.y / scannerDensity );
 
             PosVector pos = new PosVector(x * scannerDensity, y * scannerDensity);
-            UnitScanner temp = null;
+            temp = null;
 
             foreach (var scanner in UnitScanners)
             {
@@ -83,16 +106,13 @@ public class UnitFleet : MonoBehaviour
 
             if (temp == null)
             {
-                temp = new UnitScanner
-                {
-                    StartingPos = pos,
-                    UnitGroups = new List<UnitGroup> { item }
-                };
+                Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject);
+                temp = Go.GetComponent<UnitScanner>();
+                temp.Fleet = this;
+                temp.StartingPos = pos;
+                temp.UnitGroups = new List<UnitGroup> { item };
 
                 UnitScanners.Add(temp);
-
-                Transform t = Instantiate(UnitController.Instance.UnitGroupSetting.TestIcon, TheGroup.position + new Vector3(x * scannerDensity, y * scannerDensity, 0), TheGroup.rotation);
-                t.SetParent(TheGroup);
             }
             else
             {
@@ -122,13 +142,25 @@ public class UnitFleet : MonoBehaviour
                 (PosVector.Angle(item.StartingPos, y.StartingPos));
             });
 
-            int distance = 0;
+            int distant = 0;
+
             for (int i = 0; i < item.UnitGroups.Count; i++)
             {
                 var x = item.UnitGroups[i];
-                distance = Mathf.Max(PosVector.SqDistance(item.StartingPos, x.StartingPos), distance);
+                distant = Mathf.Max(PosVector.SqDistance(item.StartingPos, x.StartingPos), distant);
             }
-            item.maxDistance = Mathf.CeilToInt(Mathf.Sqrt(distance));
+            item.MaxDistance = Mathf.CeilToInt(Mathf.Sqrt(distant));
+
+            distant = 0;
+            for (int i = 0; i < item.UnitGroups.Count; i++)
+            {
+                var x = item.UnitGroups[i];
+                for (int j = 0; j < x.Setting.Weapons.Count; j++)
+                {
+                    distant = Mathf.Max(distant, x.Setting.Weapons[j].Range);
+                }
+            }
+            item.WeaponDistant = distant;
         }
     }
 
@@ -179,6 +211,20 @@ public class UnitFleet : MonoBehaviour
 
     private void Reset()
     {
+
+    }
+
+    private void UpdateFleetRadis()
+    {
+        FleetRadis = 0;
+
+        foreach (var item in UnitGroups)
+        {
+            FleetRadis = Mathf.Max(FleetRadis, PosVector.SqDistance(item.StartingPos, new PosVector(TheGroup.localPosition)));
+        }
+
+        FleetRadis = Mathf.RoundToInt(Mathf.Sqrt(FleetRadis));
+
 
     }
 }
