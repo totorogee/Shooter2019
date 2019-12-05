@@ -4476,6 +4476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55c46c97665514b0c9ca91a5bb44f8dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EventTrigger: 
   handleRange: 1
   deadZone: 0
   axisOptions: 0
@@ -4545,6 +4546,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42844a4fccbd54746b90cade4ff70f73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EventTrigger: RotationInput
   handleRange: 1
   deadZone: 0
   axisOptions: 1

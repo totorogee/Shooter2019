@@ -11,9 +11,29 @@ public class FleetJoystick : VariableJoystick
     private int direction = 30;
     private float inputDirection = 0;
 
-    public override void OnDrag(PointerEventData eventData)
+
+    private void OnEnable()
+    {
+        EventManager.StartListening(EventList.RotationInput, UpdateUI);
+    }
+
+    private void OnDisable()
+    {
+        EventManager.StopListening(EventList.RotationInput, UpdateUI);
+    }
+
+    public void UpdateUI()
     {
         direction = UnitFleet.AllRed[GroupTestingController.Instance.CurrentSelection].Angle;
+        background.eulerAngles = new Vector3(background.eulerAngles.x, background.eulerAngles.y, -direction);
+    }
+
+
+    public override void OnDrag(PointerEventData eventData)
+    {
+        UpdateUI();
+
+
 
         cam = null;
         if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
@@ -22,9 +42,6 @@ public class FleetJoystick : VariableJoystick
         Vector2 position = RectTransformUtility.WorldToScreenPoint(cam, background.position);
         Vector2 radius = background.sizeDelta / 2;
         input = (eventData.position - position) / (radius * canvas.scaleFactor);
-
-        background.eulerAngles = new Vector3(background.eulerAngles.x, background.eulerAngles.y, -direction);
-
 
         inputDirection = Mathf.Atan2(input.x, input.y) * (180/Mathf.PI);
         if (inputDirection < 0)
@@ -64,8 +81,6 @@ public class FleetJoystick : VariableJoystick
         }
         else
         { 
-
-            Debug.Log("Back");
             return Mathf.Min(Mathf.Abs(BackwardLimit /cos) , Mathf.Abs(SidewayLimit / sin));
         }
     }

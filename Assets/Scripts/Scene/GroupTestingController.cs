@@ -118,7 +118,10 @@ public class GroupTestingController : MonoBehaviour
             temp = UnitFleet.AllRed[CurrentSelection].TheGroup.localEulerAngles;
             temp.z -= hJoystick.Horizontal * 90f * Time.fixedDeltaTime;
             UnitFleet.AllRed[CurrentSelection].TheGroup.localEulerAngles = temp;
-
+            if (hJoystick.Horizontal != 0)
+            {
+                EventManager.TriggerEvent(EventList.RotationInput);
+            }
         }
     }
 
@@ -169,6 +172,7 @@ public class GroupTestingController : MonoBehaviour
 
     private void ChangeDensity(float density)
     {
+
         UnitFleet.AllRed[CurrentSelection].ChangeDensity(density);
     }
 }
