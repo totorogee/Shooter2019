@@ -7,8 +7,8 @@ public class VariableJoystick : Joystick
 {
     public float MoveThreshold { get { return moveThreshold; } set { moveThreshold = Mathf.Abs(value); } }
 
-    [SerializeField] private float moveThreshold = 1;
-    [SerializeField] private JoystickType joystickType = JoystickType.Fixed;
+    [SerializeField] protected float moveThreshold = 1;
+    [SerializeField] protected JoystickType joystickType = JoystickType.Fixed;
 
     private Vector2 fixedPosition = Vector2.zero;
 
@@ -19,9 +19,14 @@ public class VariableJoystick : Joystick
         {
             background.anchoredPosition = fixedPosition;
             background.gameObject.SetActive(true);
+            handle.gameObject.SetActive(true);
         }
         else
+        {
             background.gameObject.SetActive(false);
+            handle.gameObject.SetActive(false);
+        }
+
     }
 
     protected override void Start()
@@ -36,7 +41,9 @@ public class VariableJoystick : Joystick
         if(joystickType != JoystickType.Fixed)
         {
             background.anchoredPosition = ScreenPointToAnchoredPosition(eventData.position);
+            handleContainer.anchoredPosition = ScreenPointToAnchoredPosition(eventData.position);
             background.gameObject.SetActive(true);
+            handle.gameObject.SetActive(true);
         }
         base.OnPointerDown(eventData);
     }
@@ -44,7 +51,11 @@ public class VariableJoystick : Joystick
     public override void OnPointerUp(PointerEventData eventData)
     {
         if(joystickType != JoystickType.Fixed)
+        {
             background.gameObject.SetActive(false);
+            handle.gameObject.SetActive(false);
+        }
+
 
         base.OnPointerUp(eventData);
     }
@@ -55,6 +66,7 @@ public class VariableJoystick : Joystick
         {
             Vector2 difference = normalised * (magnitude - moveThreshold) * radius;
             background.anchoredPosition += difference;
+            handleContainer.anchoredPosition += difference;
         }
         base.HandleInput(magnitude, normalised, radius, cam);
     }
