@@ -17,5 +17,5 @@ MonoBehaviour:
   colorRadis: 5
   centerColor: {r: 1, g: 1, b: 1, a: 1}
   edgeColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  showMainTiles: 1
-  hideSmallTiles: 1
+  showMainTiles: 0
+  hideSmallTiles: 0

@@ -13,7 +13,11 @@ public class WeaponSettings : ScriptableObject
 	private int range = 20;
 	public int Range => range;
 
-	[SerializeField]
+    [SerializeField]
+    private int minRange = 8;
+    public int MinRange => minRange;
+
+    [SerializeField]
 	private int angle = 90;
 	public int Angle => angle;
 

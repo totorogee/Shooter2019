@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40b7e6619eef489c9c581f674366825, type: 3}
   m_Name: WeaponSettingData
   m_EditorClassIdentifier: 
-  weaponName: 
-  range: 20
-  angle: 90
-  damage: 8
+  weaponName: Long
+  range: 30
+  minRange: 8
+  angle: 30
+  damage: 10
   blockDamagePenalty: 2
   blockRangePenalty: 2
   WarnningEffect: {fileID: 4065211632820013601, guid: dd9063789036a4f98b931ae487965d8f,

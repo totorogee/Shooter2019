@@ -19,9 +19,8 @@ MonoBehaviour:
   TurnAcc: 1
   MoveAcc: 1
   displaySize: 0.7
-  unitBase: {fileID: 0}
   HPMax: 100
-  Recover: 20
+  Recover: 2
   HPUnitSharing: 10
   HPGroupSharing: 2
   HPSharingMin: 20
@@ -34,4 +33,6 @@ MonoBehaviour:
   GroupOfThree: {fileID: 8113273991834579614, guid: 0b6f579709dc64ad29bf93ea30a694aa,
     type: 3}
   GroupOfFour: {fileID: 5586690066569356370, guid: 95b173df090a84079bca73ea36e2f34e,
+    type: 3}
+  TestIcon: {fileID: 5018206868212798519, guid: 1d6fc74cfe657450baea1ccf09db3149,
     type: 3}
