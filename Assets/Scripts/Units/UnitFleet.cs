@@ -20,6 +20,70 @@ public class UnitFleet : MonoBehaviour
         }
     }
 
+
+
+    public float ForwardSpeed
+    {
+        get
+        {
+            if (forwardSpeed <= 0)
+            {
+                forwardSpeed = 1;
+
+                foreach (var item in UnitGroups)
+                {
+                    forwardSpeed = Mathf.Min(forwardSpeed, item.Setting.ForwardSpeed);
+                }
+            }
+            return forwardSpeed;
+        }
+    }
+    private float forwardSpeed = 0;
+
+    public float BackwardSpeed
+    {
+        get
+        {
+            if (backwardSpeed <= 0)
+            {
+                backwardSpeed = 1;
+
+                foreach (var item in UnitGroups)
+                {
+                    backwardSpeed = Mathf.Min(backwardSpeed, item.Setting.BackwardSpeed);
+                }
+            }
+            return backwardSpeed;
+        }
+    }
+    private float backwardSpeed = 0;
+
+    public float SidewaySpeed
+    {
+        get
+        {
+            if (sidewaySpeed <= 0)
+            {
+                sidewaySpeed = 1;
+
+                foreach (var item in UnitGroups)
+                {
+                    sidewaySpeed = Mathf.Min(sidewaySpeed, item.Setting.SidewaySpeed);
+                }
+            }
+            return sidewaySpeed;
+        }
+    }
+    private float sidewaySpeed = 0;
+
+    public float RotationSpeed
+    {
+        get
+        {
+            return forwardSpeed / FleetRadis;
+        }
+    }
+
     public List<UnitGroup> Enemy = new List<UnitGroup>();
 
     public int FleetRadis = 0;
@@ -173,17 +237,7 @@ public class UnitFleet : MonoBehaviour
 
     public void CheckAttack()
     {
-        //if (Fleet.Team == TeamName.Red)
-        //{
-        //    foreach (var item in AllBlue)
-        //    {
-        //        if ((transform.position - item.transform.position).magnitude < AttackRange)
-        //        {
-        //            Setting.Weapons[0].ShootingEffect.OnSpawn(transform.position, item.transform.position, 0, 0.2f);
-        //            item.TakeDamage(AttackDamage);
-        //        }
-        //    }
-        //}
+
     }
 
     private void LoadSlot(int ID)

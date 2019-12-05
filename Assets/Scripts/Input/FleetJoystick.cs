@@ -5,33 +5,38 @@ using UnityEngine.EventSystems;
 
 public class FleetJoystick : VariableJoystick
 {
-    public float ForwardLimit = 1f;
-    public float BackwardLimit = 0.6f;
-    public float SidewayLimit = 0.3f;
-    private int direction = 30;
-    private float inputDirection = 0;
+    private float ForwardLimit;
+    private float BackwardLimit;
+    private float SidewayLimit;
+    private int direction;
+    private float inputDirection;
 
 
     private void OnEnable()
     {
-        EventManager.StartListening(EventList.RotationInput, UpdateUI);
+        EventManager.StartListening(EventList.RotationInput, UpdateSpeed);
     }
 
     private void OnDisable()
     {
-        EventManager.StopListening(EventList.RotationInput, UpdateUI);
+        EventManager.StopListening(EventList.RotationInput, UpdateSpeed);
     }
 
-    public void UpdateUI()
+    public void UpdateSpeed()
     {
-        direction = UnitFleet.AllRed[GroupTestingController.Instance.CurrentSelection].Angle;
+        var fleet = UnitFleet.AllRed[GroupTestingController.Instance.CurrentSelection];
+
+        direction = fleet.Angle;
         background.eulerAngles = new Vector3(background.eulerAngles.x, background.eulerAngles.y, -direction);
+        ForwardLimit = fleet.ForwardSpeed;
+        BackwardLimit = fleet.BackwardSpeed;
+        SidewayLimit = fleet.SidewaySpeed;
     }
 
 
     public override void OnDrag(PointerEventData eventData)
     {
-        UpdateUI();
+        UpdateSpeed();
 
 
 
@@ -50,8 +55,7 @@ public class FleetJoystick : VariableJoystick
         }
 
         FormatInput();
-        HandleInput(input.magnitude, input.normalized, radius , cam);
-
+        HandleInput(input.magnitude, input.normalized, radius, cam);
         handle.anchoredPosition = input * radius * handleRange;
     }
 

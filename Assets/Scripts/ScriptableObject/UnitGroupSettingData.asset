@@ -12,12 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a56b5a59eca094b6096982958b1cd193, type: 3}
   m_Name: UnitGroupSettingData
   m_EditorClassIdentifier: 
-  TurnSpeed: 1
-  FSpeed: 1
-  RLSpeed: 0.5
-  BSpeed: 0.7
-  TurnAcc: 1
-  MoveAcc: 1
+  ForwardSpeed: 1
+  SidewaySpeed: 0.4
+  BackwardSpeed: 0.7
   displaySize: 0.7
   HPMax: 100
   Recover: 2

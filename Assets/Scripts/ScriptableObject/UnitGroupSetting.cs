@@ -7,13 +7,9 @@ public class UnitGroupSetting : ScriptableObject
 {
 
     [Header("Movement Setting")]
-    public float TurnSpeed = 1f;
-    public float FSpeed = 1f;
-    public float RLSpeed = 0.5f;
-    public float BSpeed = 0.7f;
-
-    public float TurnAcc = 1f;
-    public float MoveAcc = 1f;
+    public float ForwardSpeed = 1f;
+    public float SidewaySpeed = 0.5f;
+    public float BackwardSpeed = 0.7f;
 
     public float displaySize = 0.7f;
 

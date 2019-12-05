@@ -116,11 +116,12 @@ public class GroupTestingController : MonoBehaviour
             UnitFleet.AllRed[CurrentSelection].TheGroup.localPosition = temp;
 
             temp = UnitFleet.AllRed[CurrentSelection].TheGroup.localEulerAngles;
-            temp.z -= hJoystick.Horizontal * 90f * Time.fixedDeltaTime;
+            temp.z -= hJoystick.Horizontal * 360f * Time.fixedDeltaTime * UnitFleet.AllRed[CurrentSelection].RotationSpeed;
             UnitFleet.AllRed[CurrentSelection].TheGroup.localEulerAngles = temp;
             if (hJoystick.Horizontal != 0)
             {
                 EventManager.TriggerEvent(EventList.RotationInput);
+                Debug.Log(UnitFleet.AllRed[CurrentSelection].RotationSpeed); 
             }
         }
     }
