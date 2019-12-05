@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum UnitBaseState
+public enum UnitBaseStatus
 {
     Nil =0,
     Stunned =1,
@@ -21,12 +21,13 @@ public class UnitBase : MonoBehaviour
     public UnitGroupSetting Setting;
 
     public float HP = 100;
-    public UnitBaseState UnitState = UnitBaseState.Nil;
+    public UnitBaseStatus UnitStatus = UnitBaseStatus.Nil;
 
     public PosVector GroundedPos;
 
-    public static Color DamageColor = Color.blue;
-    public static Color NormalColor = Color.red;
+    public static Color DamageColor = Color.white;
+    public static Color RedColor = Color.red;
+    public static Color BlueColor = Color.blue;
     public Transform Body;
 
     public void Init(UnitGroup group )
@@ -57,12 +58,13 @@ public class UnitBase : MonoBehaviour
     public void UpdateUI()
     {
         var material = Body.GetComponent<MeshRenderer>().material;
-        material.color = Color.Lerp(DamageColor, NormalColor, (float)HP / (float)Setting.HPMax);
+        material.color = Color.Lerp(DamageColor, Fleet.Team== TeamName.Red ? RedColor : BlueColor , (float)HP / (float)Setting.HPMax);
 
-        if( HP <= 0 && UnitState == UnitBaseState.Nil)
+        if( HP <= 0 && UnitStatus == UnitBaseStatus.Nil)
         {
-            UnitState = UnitBaseState.Dead;
-            transform.localPosition = transform.localPosition * 2f;
+            UnitStatus = UnitBaseStatus.Dead;
+            transform.localPosition = transform.localPosition * 4f;
+            transform.SetParent(Fleet.TheGround);
             Body.transform.localEulerAngles = new Vector3(0f ,0f, Random.Range(0f, 180f));
         }
     }

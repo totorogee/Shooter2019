@@ -14,7 +14,7 @@ public class GroupTestingSceneUIController : MonoBehaviour
     public ButtonCellUIController MainMenu;
     public ButtonCellUIController TopRightMenu;
     public ButtonCellUIController BottonMenu;
-    public VariableJoystick FullJoystick;
+    public FleetJoystick FullJoystick;
     public VariableJoystick HJoystick;
 
     public Slider DensitySlider;

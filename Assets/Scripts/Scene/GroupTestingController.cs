@@ -6,6 +6,8 @@ using Cinemachine;
 
 public class GroupTestingController : MonoBehaviour
 {
+    public static GroupTestingController Instance;
+
     public Transform DummyEnemy;
 
     public CinemachineTargetGroup TargetGroup;
@@ -25,12 +27,14 @@ public class GroupTestingController : MonoBehaviour
 
     private Slider densitySlider;
 
-    private VariableJoystick fullJoystick;
+    private FleetJoystick fullJoystick;
     private VariableJoystick hJoystick;
 
 
     private void OnEnable()
     {
+        Instance = this;
+
         EventManager.StartListening(EventList.FloorReady, Init);
     }
 
@@ -77,31 +81,20 @@ public class GroupTestingController : MonoBehaviour
         {
             GameObject Go = Instantiate(UnitController.Instance.UnitFleetPrefab.gameObject);
             UnitFleet unitFleet = Go.GetComponent<UnitFleet>();
-            unitFleet.Init(0);
+            unitFleet.Init(i);
 
             Go.name = "Fleet_" + i;
-            unitFleet.TheGroup.transform.position = new Vector3((i - 1f) * 30f, -20f, 0f);
+            unitFleet.TheGroup.transform.position = new Vector3((i - 1f) * 50f, -20f, 0f);
 
 
             TargetGroup.m_Targets[i].target = unitFleet.TheGroup;
             TargetGroup.m_Targets[i].weight = 1f;
-            TargetGroup.m_Targets[i].radius = 15f;
+            TargetGroup.m_Targets[i].radius = 20f;
 
         }
 
         fullJoystick = UIController.FullJoystick;
         hJoystick = UIController.HJoystick;
-    }
-
-
-
-
-    private void Start()
-    {
-
-
-
-
     }
 
     private void Update()
@@ -162,7 +155,11 @@ public class GroupTestingController : MonoBehaviour
 
     private void OnSendEnemyPressed()
     {
-        Instantiate(DummyEnemy);
+        GameObject Go = Instantiate(DummyEnemy.gameObject);
+        Go.GetComponent<UnitFleet>().Init(Random.Range(0, 3));
+        Go.GetComponent<DummyEnemy>().Direction = 180;
+        Go.GetComponent<DummyEnemy>().StartingPos = new Vector3(Random.Range(-60, 60), 60, 0);
+
     }
 
     private void ChangeDensity()

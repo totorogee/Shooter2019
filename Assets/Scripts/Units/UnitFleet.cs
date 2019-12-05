@@ -71,6 +71,7 @@ public class UnitFleet : MonoBehaviour
         {
             item.transform.localPosition = new Vector3(item.StartingPos.x * density / 2, item.StartingPos.y * density / 2, item.transform.localPosition.z);
         }
+        UpdateFleetRadis();
     }
 
     public void ChangeFormation()
@@ -80,7 +81,7 @@ public class UnitFleet : MonoBehaviour
 
     private void SetScanner()
     {
-        GameObject Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject);
+        GameObject Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject , TheGroup);
         UnitScanner temp = Go.GetComponent<UnitScanner>();
         temp.Fleet = this;
         temp.StartingPos = new PosVector(0, 0);
@@ -106,7 +107,7 @@ public class UnitFleet : MonoBehaviour
 
             if (temp == null)
             {
-                Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject);
+                Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject , TheGroup);
                 temp = Go.GetComponent<UnitScanner>();
                 temp.Fleet = this;
                 temp.StartingPos = pos;
@@ -149,7 +150,7 @@ public class UnitFleet : MonoBehaviour
                 var x = item.UnitGroups[i];
                 distant = Mathf.Max(PosVector.SqDistance(item.StartingPos, x.StartingPos), distant);
             }
-            item.MaxDistance = Mathf.CeilToInt(Mathf.Sqrt(distant));
+            item.Radius = Mathf.CeilToInt(Mathf.Sqrt(distant));
 
             distant = 0;
             for (int i = 0; i < item.UnitGroups.Count; i++)
@@ -160,6 +161,7 @@ public class UnitFleet : MonoBehaviour
                     distant = Mathf.Max(distant, x.Setting.Weapons[j].Range);
                 }
             }
+
             item.WeaponDistant = distant;
         }
     }
@@ -220,7 +222,7 @@ public class UnitFleet : MonoBehaviour
 
         foreach (var item in UnitGroups)
         {
-            FleetRadis = Mathf.Max(FleetRadis, PosVector.SqDistance(item.StartingPos, new PosVector(TheGroup.localPosition)));
+            FleetRadis = Mathf.Max(FleetRadis, PosVector.SqDistance(item.Position, Position));
         }
 
         FleetRadis = Mathf.RoundToInt(Mathf.Sqrt(FleetRadis));

@@ -25,7 +25,7 @@ public class DummyEnemy : MonoBehaviour
                 Init();
             }
 
-            UnitFleet.TheGroup.Translate(new Vector3(0, 2, 0) * Time.fixedDeltaTime);
+            UnitFleet.TheGroup.Translate(new Vector3(0, 1f, 0) * Time.fixedDeltaTime);
         }
     }
 
