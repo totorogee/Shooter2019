@@ -53,6 +53,7 @@ MonoBehaviour:
   disappearTime: 80
   LineRenderer: {fileID: 2804840739400780190}
   LineEndPoint: {fileID: 2804840739725429720}
+  Start: {fileID: 0}
   Target: {fileID: 0}
   StartColor:
     serializedVersion: 2
@@ -248,7 +249,7 @@ LineRenderer:
     textureMode: 0
     shadowBias: 0.5
     generateLightingData: 0
-  m_UseWorldSpace: 0
+  m_UseWorldSpace: 1
   m_Loop: 0
 --- !u!1 &2804840739725429721
 GameObject:

@@ -77,12 +77,14 @@ public class Spawnable : MonoBehaviour
         OnSpawn(startTime, endTime);
     }
 
+    public virtual Spawnable NewSpawn()
+    {
+        GameObject go = Instantiate(gameObject);
+        return go.GetComponent<Spawnable>();
+    }
+
     public virtual void OnSpawn(float startTime = 0, float endTime = 1f)
     {
-
-        PrefabAssetType prefabType = PrefabUtility.GetPrefabAssetType(this);
-        Debug.Log(prefabType.ToString());
-
         Disappear();
 
         Body.localPosition = StartPos;
