@@ -47,14 +47,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Icon: {fileID: 1498120785927886828}
   Aim: {fileID: 4113562272257945475}
+  UnitGroups: []
+  Enemy: []
+  Radius: 0
+  WeaponDistant: 0
   Fleet: {fileID: 0}
   StartingPos:
     x: 0
     y: 0
-  UnitGroups: []
-  MaxDistance: 0
-  WeaponDistant: 0
-  Enemy: []
 --- !u!1 &3837064840451172609
 GameObject:
   m_ObjectHideFlags: 0
@@ -71,7 +71,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1498120785927886828
 Transform:
   m_ObjectHideFlags: 0
@@ -151,7 +151,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4113562272257945475
 Transform:
   m_ObjectHideFlags: 0

@@ -9,7 +9,7 @@ public struct PosVector
     public int x;
     public int y;
 
-    public PosVector(int x , int y)
+    public PosVector(int x, int y)
     {
         this.x = x;
         this.y = y;
@@ -27,29 +27,54 @@ public struct PosVector
         this.y = Mathf.RoundToInt(pos.y);
     }
 
-    public static bool operator == (PosVector A, PosVector B)
+    public static bool operator ==(PosVector A, PosVector B)
     {
         return A.x == B.x && A.y == B.y;
     }
 
-    public static bool operator != (PosVector A, PosVector B)
+    public static bool operator !=(PosVector A, PosVector B)
     {
-        return !(A==B);
+        return !(A == B);
     }
 
-    public static PosVector operator + ( PosVector A , PosVector B)
+    public static PosVector operator +(PosVector A, PosVector B)
     {
         return new PosVector(A.x + B.x, A.y + B.y);
     }
 
-    public static PosVector operator - (PosVector A, PosVector B)
+    public static PosVector operator -(PosVector A, PosVector B)
     {
         return new PosVector(A.x - B.x, A.y - B.y);
     }
 
-    public static int SqDistance (PosVector A, PosVector B)
+    public static PosVector operator *(PosVector A, float B)
+    {
+        return new PosVector(Mathf.RoundToInt(A.x * B), Mathf.RoundToInt(A.y * B));
+    }
+
+    public static int SqDistance(PosVector A, PosVector B)
     {
         return (A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y);
+    }
+
+
+    public static PosVector Rotate(PosVector A, int degrees)
+    {
+        float sin = Mathf.Sin(-degrees * Mathf.Deg2Rad);
+        float cos = Mathf.Cos(-degrees * Mathf.Deg2Rad);
+
+        float tx = A.x;
+        float ty = A.y;
+
+        A.x = Mathf.RoundToInt((cos * tx) - (sin * ty));
+        A.y = Mathf.RoundToInt((sin * tx) + (cos * ty));
+
+        return A;
+    }
+
+    public static Vector3 ToVector3(PosVector A)
+    {
+        return new Vector3(A.x, A.y, 0);
     }
 
     public static float Angle(PosVector A, PosVector B)
@@ -58,7 +83,6 @@ public struct PosVector
 
         if (temp.x == 0 && temp.y == 0)
         {
-            Debug.Log("o");
             return 0f;
         }
 
@@ -77,7 +101,7 @@ public static class VectorTools
 
     #region SandBox
 
-    public static int ToInt (this Vector2Int vector)
+    public static int ToInt(this Vector2Int vector)
     {
         return (vector.x << 16) | vector.y & 0xFFFF;
     }
@@ -89,7 +113,7 @@ public static class VectorTools
 
     public static Vector2Int RotatedVectors(this Vector2Int input, int angle)
     {
-        switch (angle%90)
+        switch (angle % 90)
         {
             case 0:
                 return input;

@@ -8,15 +8,14 @@ public class UnitScanner : MonoBehaviour
     public Transform Icon;
     public Transform Aim;
 
-    public UnitFleet Fleet;
-    public PosVector StartingPos;
-
-
     public List<UnitGroup> UnitGroups = new List<UnitGroup>();
-    public int MaxDistance = 0;
+    public List<UnitGroup> Enemy = new List<UnitGroup>();
+
+    public int Radius = 0;
     public int WeaponDistant = 0;
 
-    public List<UnitGroup> Enemy = new List<UnitGroup>();
+    public UnitFleet Fleet;
+    public PosVector StartingPos;
 
     public PosVector LocalPosition
     {
@@ -39,11 +38,25 @@ public class UnitScanner : MonoBehaviour
     {
         get
         {
-            PosVector result = (StartingPos + new PosVector(0, 10)) * Mathf.RoundToInt(Fleet.Density) * 0.5f;
+            PosVector result = (StartingPos * Mathf.RoundToInt(Fleet.Density) * 0.5f) + new PosVector(0, WeaponDistant / 2);
             return PosVector.Rotate(result, Fleet.Angle) + Fleet.Position;
         }
     }
 
+    public bool Alive
+    {
+        get
+        {
+            foreach (var item in UnitGroups)
+            {
+                if (item.Alive)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 
     private void Update()
     {
