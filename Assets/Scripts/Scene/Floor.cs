@@ -26,13 +26,13 @@ public class Floor : MonoBehaviour
     {
         Instance = this;
 
-        EventManager.StartListening<Vector2>(EventList.OnMousePressed , MousePressed);
+        EventManager.StartListening<Vector2>(EventList.MousePressed , MousePressed);
 
     }
 
     private void OnDisable()
     {
-        EventManager.StopListening<Vector2>(EventList.OnMousePressed, MousePressed);
+        EventManager.StopListening<Vector2>(EventList.MousePressed, MousePressed);
 
     }
 

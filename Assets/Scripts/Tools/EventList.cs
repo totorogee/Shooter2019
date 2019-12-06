@@ -1,7 +1,7 @@
-﻿public static class EventList
+﻿public enum EventList
 {
-    public static string OnMousePressed = "MousePressed";
-    public static string TilePressed = "TilePressed";
-    public static string FloorReady = "FloorReady";
-    public static string RotationInput = "RotaionInput";
+    MousePressed = 1,
+    TilePressed = 2,
+    FloorReady = 3,
+    FleetRotation = 4
 }

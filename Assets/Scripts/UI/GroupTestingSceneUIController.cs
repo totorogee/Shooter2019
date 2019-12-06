@@ -41,7 +41,7 @@ public class GroupTestingSceneUIController : MonoBehaviour
     private void OnTouch(PointerEventData eventData)
     {
         Vector2 pos = Camera.main.ScreenToWorldPoint(eventData.pressPosition);
-        EventManager.TriggerEvent(EventList.OnMousePressed, pos);
+        EventManager.TriggerEvent(EventList.MousePressed, pos);
     }
 
     private void Start()

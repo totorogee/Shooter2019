@@ -15,6 +15,11 @@ public class EventManager : PrefabSingleton<EventManager>
 
     #region Generic argument
 
+    public static void StartListening<T>(EventList eventList, UnityAction<T> listener)
+    {
+        StartListening<T>(eventList.ToString(), listener);
+    }
+
     public static void StartListening<T>(string eventName, UnityAction<T> listener) 
     {
 
@@ -35,6 +40,11 @@ public class EventManager : PrefabSingleton<EventManager>
         }
     }
 
+    public static void StopListening<T>(EventList eventList, UnityAction<T> listener)
+    {
+        StopListening<T>(eventList.ToString(), listener);
+    }
+
     public static void StopListening<T>(string eventName, UnityAction<T> listener)
     {
 
@@ -52,6 +62,11 @@ public class EventManager : PrefabSingleton<EventManager>
         {
             Debug.LogWarning ("Event not registered : " + eventName + " / Param : " + typeof(T));
         }
+    }
+
+    public static void TriggerEvent<T>(EventList eventList, T message)
+    {
+        TriggerEvent<T>(eventList.ToString(), message);
     }
 
     public static void TriggerEvent<T>(string eventName, T message)
@@ -80,6 +95,11 @@ public class EventManager : PrefabSingleton<EventManager>
 
     #region No argument
 
+    public static void StartListening(EventList eventList, UnityAction listener)
+    {
+        StartListening(eventList.ToString(), listener);
+    }
+
     public static void StartListening(string eventName, UnityAction listener)
     {
         EventArg thisInfo = new EventArg
@@ -99,6 +119,11 @@ public class EventManager : PrefabSingleton<EventManager>
         }
     }
 
+    public static void StopListening(EventList eventList, UnityAction listener)
+    {
+        StopListening(eventList.ToString(), listener);
+    }
+
     public static void StopListening(string eventName, UnityAction listener)
     {
         EventArg thisInfo = new EventArg
@@ -115,6 +140,11 @@ public class EventManager : PrefabSingleton<EventManager>
         {
             Debug.LogWarning("Event not registered : " + eventName);
         }
+    }
+
+    public static void TriggerEvent(EventList eventList)
+    {
+        TriggerEvent(eventList.ToString());
     }
 
     public static void TriggerEvent(string eventName)

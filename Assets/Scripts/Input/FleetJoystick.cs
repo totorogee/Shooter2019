@@ -14,12 +14,12 @@ public class FleetJoystick : VariableJoystick
 
     private void OnEnable()
     {
-        EventManager.StartListening(EventList.RotationInput, UpdateSpeed);
+        EventManager.StartListening(EventList.FleetRotation, UpdateSpeed);
     }
 
     private void OnDisable()
     {
-        EventManager.StopListening(EventList.RotationInput, UpdateSpeed);
+        EventManager.StopListening(EventList.FleetRotation, UpdateSpeed);
     }
 
     public void UpdateSpeed()
