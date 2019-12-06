@@ -30,6 +30,14 @@ public class UnitBase : MonoBehaviour
     public static Color BlueColor = Color.blue;
     public Transform Body;
 
+    private Vector3 StartRotation;
+    private Vector3 StartPosition;
+
+    private float StunTime = 0;
+    private Transform StunEffect;
+    private Coroutine StunCoroutine;
+    private float RandomSeed = 0; 
+
     public void Init(UnitGroup group )
     {
         DidInit = true;
@@ -39,6 +47,10 @@ public class UnitBase : MonoBehaviour
         Setting = group.Setting;
 
         HP = Setting.HPMax / 5;
+
+        StartRotation = Body.localEulerAngles;
+        StartPosition = Body.localPosition;
+        RandomSeed = Random.Range(0f, 1f);
     }
 
     public void Update()
@@ -60,17 +72,114 @@ public class UnitBase : MonoBehaviour
         var material = Body.GetComponent<MeshRenderer>().material;
         material.color = Color.Lerp(DamageColor, Fleet.Team== TeamName.Red ? RedColor : BlueColor , (float)HP / (float)Setting.HPMax);
 
-        if( HP <= 0 && UnitStatus == UnitBaseStatus.Nil)
+        if( HP <= 0 && UnitStatus != UnitBaseStatus.Dead) 
         {
+            if (UnitStatus == UnitBaseStatus.Stunned)
+            {
+                OnStunEnd();
+            }
+
             UnitStatus = UnitBaseStatus.Dead;
             transform.localPosition = transform.localPosition * 4f;
             transform.SetParent(Fleet.TheGround);
             Body.transform.localEulerAngles = new Vector3(0f ,0f, Random.Range(0f, 180f));
+            OnDead();
         }
+
+        if (HP < 0)
+        {
+            return;
+        }
+
+        if (StunTime > 0)
+        {
+            StunTime -= Time.deltaTime;
+            if (UnitStatus != UnitBaseStatus.Stunned)
+            {
+                OnStun();
+            }
+            UnitStatus = UnitBaseStatus.Stunned;
+        }
+        else
+        {
+            if (UnitStatus == UnitBaseStatus.Stunned)
+            {
+                OnStunEnd();
+            }
+            UnitStatus = UnitBaseStatus.Nil;
+        }
+
+
     }
 
     public void TakeDamage(float damage)
     {
          HP -= damage;
+
     }
+
+    public void TakeStun(float time)
+    {
+        StunTime += time;
+    }
+
+    public void OnDead()
+    {
+        StartCoroutine(DelayDead(Random.Range(0.5f, 2f)));
+    }
+
+    private IEnumerator DelayDead(float delay )
+    {
+        yield return new WaitForSeconds(delay);
+        Spawnable effect = Group.Setting.DeadEffect.NewSpawn();
+        effect.transform.position = transform.position;
+        effect.OnSpawn();
+        Body.gameObject.SetActive(false);
+
+    }
+
+    public void OnStun()
+    {
+        Spawnable effect = Group.Setting.StunEffect.NewSpawn();
+        StunEffect = effect.transform;
+        StunEffect.transform.position = transform.position;
+        effect.OnSpawn();
+        Body.localPosition = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f);
+
+        StunCoroutine = StartCoroutine(DelayStun());
+    }
+
+    public void OnStunEnd()
+    {
+        if (StunEffect != null)
+        {
+            StunEffect.GetComponent<Spawnable>().Kill();
+            StunEffect = null;
+
+        }
+
+        if(StunCoroutine != null)
+        {
+            StopCoroutine(StunCoroutine);
+            StunCoroutine = null;
+
+        }
+
+        Body.localEulerAngles = StartRotation;
+        Body.localPosition = StartPosition;
+    }
+
+    private IEnumerator DelayStun()
+    { 
+        while (true)
+        {
+            yield return new WaitForEndOfFrame();
+            var lerp = (Time.realtimeSinceStartup +RandomSeed) % 8f /8f;
+            Body.localEulerAngles = new Vector3 (0, 0, Mathf.Sin(lerp * 2 * Mathf.PI) * 180f);
+        }
+
+
+    }
+
+
 }

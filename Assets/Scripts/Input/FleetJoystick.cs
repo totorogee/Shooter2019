@@ -33,12 +33,17 @@ public class FleetJoystick : VariableJoystick
         SidewayLimit = fleet.SidewaySpeed;
     }
 
+    private void Update()
+    {
+        if (Direction != Vector2.zero)
+        {
+            UpdateSpeed();
+        }
+    }
 
     public override void OnDrag(PointerEventData eventData)
     {
         UpdateSpeed();
-
-
 
         cam = null;
         if (canvas.renderMode == RenderMode.ScreenSpaceCamera)

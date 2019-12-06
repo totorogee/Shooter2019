@@ -20,7 +20,7 @@ public class UnitFleet : MonoBehaviour
         }
     }
 
-
+    public UnitGroup Touching;
 
     public float ForwardSpeed
     {
@@ -35,7 +35,7 @@ public class UnitFleet : MonoBehaviour
                     forwardSpeed = Mathf.Min(forwardSpeed, item.Setting.ForwardSpeed);
                 }
             }
-            return forwardSpeed;
+            return forwardSpeed * (Touching ? 0.25f : 1f);
         }
     }
     private float forwardSpeed = 0;
@@ -53,7 +53,7 @@ public class UnitFleet : MonoBehaviour
                     backwardSpeed = Mathf.Min(backwardSpeed, item.Setting.BackwardSpeed);
                 }
             }
-            return backwardSpeed;
+            return backwardSpeed * (Touching ? 0.25f : 1f);
         }
     }
     private float backwardSpeed = 0;
@@ -71,7 +71,7 @@ public class UnitFleet : MonoBehaviour
                     sidewaySpeed = Mathf.Min(sidewaySpeed, item.Setting.SidewaySpeed);
                 }
             }
-            return sidewaySpeed;
+            return sidewaySpeed * (Touching ? 0.25f : 1f);
         }
     }
     private float sidewaySpeed = 0;
@@ -80,7 +80,7 @@ public class UnitFleet : MonoBehaviour
     {
         get
         {
-            return forwardSpeed / FleetRadis;
+            return (forwardSpeed / FleetRadis) * (Touching ? 0.25f : 1f); 
         }
     }
 

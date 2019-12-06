@@ -51,6 +51,21 @@ public class UnitGroup : MonoBehaviour
         }
     }
 
+    public bool IsStun
+    {
+        get
+        {
+            foreach (var item in UnitBases)
+            {
+                if (item.UnitStatus == UnitBaseStatus.Stunned)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public List<UnitBase> UnitBases = new List<UnitBase>();
 
     private bool didInit;
@@ -111,12 +126,34 @@ public class UnitGroup : MonoBehaviour
                     && (Angle < weapon.Angle || 360 - Angle < weapon.Angle)
                     && enemy.Alive )
                 {
-                    LineSpawner line = (LineSpawner) weapon.WarnningEffect.NewSpawn();
-                    line.SetStart(transform);
-                    line.SetTarget(enemy.transform);
-                    line.OnSpawn( PosVector.ToVector3( Position), PosVector.ToVector3(enemy.Position - Position), 0.1f, 1f);
+
+                    if (Fleet.Team == TeamName.Red)
+                    {
+                        LineSpawner line = (LineSpawner)weapon.WarnningEffect.NewSpawn();
+                        line.SetStart(transform);
+                        line.SetTarget(enemy.transform);
+                        line.OnSpawn(PosVector.ToVector3(Position), PosVector.ToVector3(enemy.Position - Position), 0f, 0.2f);
+
+                        line = (LineSpawner)weapon.ShootingEffect.NewSpawn();
+                        line.SetStart(transform);
+                        line.SetTarget(enemy.transform);
+                        line.OnSpawn(PosVector.ToVector3(Position), PosVector.ToVector3(enemy.Position - Position), 0.2f, 0.1f);
+                    }
+                    else
+                    {
+                        LineSpawner line = (LineSpawner)weapon.WarnningEffect.NewSpawn();
+                        line.SetStart(transform);
+                        line.SetTarget(enemy.transform);
+                        line.OnSpawn(PosVector.ToVector3(Position), PosVector.ToVector3(enemy.Position - Position), 0.4f, 0.2f);
+
+                        line = (LineSpawner)weapon.ShootingEffect.NewSpawn();
+                        line.SetStart(transform);
+                        line.SetTarget(enemy.transform);
+                        line.OnSpawn(PosVector.ToVector3(Position), PosVector.ToVector3(enemy.Position - Position), 0.6f, 0.1f);
+                    }
 
                     enemy.TakeDamage(weapon.Damage);
+                    enemy.TakeStun(weapon.StunTime);
 
                     return enemy;
                 }
@@ -135,6 +172,19 @@ public class UnitGroup : MonoBehaviour
         foreach (var item in UnitBases)
         {
             item.TakeDamage(damage / UnitBases.Count);
+        }
+    }
+
+    public void TakeStun(float time)
+    {
+        if (UnitBases.Count == 0)
+        {
+            Debug.Log("Error");
+        }
+
+        foreach (var item in UnitBases)
+        {
+            item.TakeStun(time); ;
         }
     }
 }

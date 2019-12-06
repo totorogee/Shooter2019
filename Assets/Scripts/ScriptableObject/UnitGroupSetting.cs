@@ -11,8 +11,6 @@ public class UnitGroupSetting : ScriptableObject
     public float SidewaySpeed = 0.5f;
     public float BackwardSpeed = 0.7f;
 
-    public float displaySize = 0.7f;
-
     [Header("Unit Base Setting")]
 
     public float HPMax = 100;
@@ -20,6 +18,10 @@ public class UnitGroupSetting : ScriptableObject
     public float HPUnitSharing = 10;
     public float HPGroupSharing = 2;
     public float HPSharingMin = 20;
+
+    public Spawnable DeadEffect;
+    public Spawnable StunEffect;
+    public Spawnable TouchEffect;
 
     [Header ("Unit Group Setting")]
     public List<WeaponSettings> Weapons = new List<WeaponSettings>();
@@ -55,9 +57,7 @@ public class UnitGroupSetting : ScriptableObject
     private List<Vector3> GetChildPositions(Transform transform)
     {
         List<Vector3> result = new List<Vector3>();
-        //var children = transform.GetComponentsInChildren<Transform>();
 
-        //Debug.Log(children.Length);
         for (int i = 0; i < transform.childCount ; i++)
         {
             result.Add(transform.GetChild(i).localPosition);

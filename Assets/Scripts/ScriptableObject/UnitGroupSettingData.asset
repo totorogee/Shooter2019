@@ -15,14 +15,20 @@ MonoBehaviour:
   ForwardSpeed: 1
   SidewaySpeed: 0.4
   BackwardSpeed: 0.7
-  displaySize: 0.7
   HPMax: 100
   Recover: 2
   HPUnitSharing: 10
   HPGroupSharing: 2
   HPSharingMin: 20
+  DeadEffect: {fileID: 8101274636235300694, guid: aecc2884498a14f999560647b561badf,
+    type: 3}
+  StunEffect: {fileID: 1689644103768841270, guid: 81374f37c62c94915953ea54e36ebe29,
+    type: 3}
+  TouchEffect: {fileID: 3507057499181179321, guid: 93d9ce81bfced46a4a4ed710aa1f7690,
+    type: 3}
   Weapons:
   - {fileID: 11400000, guid: 8c3a12c979fa441d2b570a1bbf8c3203, type: 2}
+  - {fileID: 11400000, guid: 5e36805a781524f00ad61ea462d0e4ed, type: 2}
   GroupOfOne: {fileID: 1641677521573948058, guid: b4900a256d2d744ee93660ef55504cb8,
     type: 3}
   GroupOfTwo: {fileID: 1670558256288301910, guid: ce3ec03362e184710b61be000bdf2ba6,

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class LineSpawner : Spawnable
 {
+    public float EndLenght = 1f;
+    public float StartLenght = 1f;
+
     public LineRenderer LineRenderer;
 
     public Transform Start;
@@ -13,7 +16,7 @@ public class LineSpawner : Spawnable
     public Gradient EndColor;
 
     public bool LoopColor = false;
-    public float LoopTime = 0.5f;
+    public float LoopTime = 0.2f;
 
 
     public void SetStart(Transform start)
@@ -42,8 +45,8 @@ public class LineSpawner : Spawnable
         Gradient gradient = GradientUtil.Lerp(StartColor, EndColor, LoopColor ? Mathf.PingPong(Time.realtimeSinceStartup , LoopTime ) : Lerp );
         LineRenderer.colorGradient = gradient;
 
-        LineRenderer.SetPosition(0, Start.position);
-        LineRenderer.SetPosition(1, Target.position);
+        LineRenderer.SetPosition(0, Vector3.Lerp(Target.position, Start.position ,  StartLenght));
+        LineRenderer.SetPosition(1, Vector3.Lerp(Start.position , Target.position , EndLenght));
 
     }
 }

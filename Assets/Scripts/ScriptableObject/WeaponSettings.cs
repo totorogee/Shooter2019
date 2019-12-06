@@ -26,6 +26,10 @@ public class WeaponSettings : ScriptableObject
 	public int Damage => damage;
 
     [SerializeField]
+    private int stunTime = 1;
+    public int StunTime => stunTime;
+
+    [SerializeField]
     private int blockDamagePenalty = 2;
     public int BlockDamagePenalty => blockDamagePenalty;
 
