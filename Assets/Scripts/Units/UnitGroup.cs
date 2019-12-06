@@ -129,27 +129,13 @@ public class UnitGroup : MonoBehaviour
 
                     if (Fleet.Team == TeamName.Red)
                     {
-                        LineSpawner line = (LineSpawner)weapon.WarnningEffect.NewSpawn();
-                        line.SetStart(transform);
-                        line.SetTarget(enemy.transform);
-                        line.OnSpawn(PosVector.ToVector3(Position), PosVector.ToVector3(enemy.Position - Position), 0f, 0.2f);
-
-                        line = (LineSpawner)weapon.ShootingEffect.NewSpawn();
-                        line.SetStart(transform);
-                        line.SetTarget(enemy.transform);
-                        line.OnSpawn(PosVector.ToVector3(Position), PosVector.ToVector3(enemy.Position - Position), 0.2f, 0.1f);
+                        weapon.WarnningEffect.Spawn(transform , enemy.transform , 0f , 0.2f);
+                        weapon.ShootingEffect.Spawn(transform , enemy.transform , 0.2f , 0.1f);
                     }
                     else
                     {
-                        LineSpawner line = (LineSpawner)weapon.WarnningEffect.NewSpawn();
-                        line.SetStart(transform);
-                        line.SetTarget(enemy.transform);
-                        line.OnSpawn(PosVector.ToVector3(Position), PosVector.ToVector3(enemy.Position - Position), 0.4f, 0.2f);
-
-                        line = (LineSpawner)weapon.ShootingEffect.NewSpawn();
-                        line.SetStart(transform);
-                        line.SetTarget(enemy.transform);
-                        line.OnSpawn(PosVector.ToVector3(Position), PosVector.ToVector3(enemy.Position - Position), 0.6f, 0.1f);
+                        weapon.WarnningEffect.Spawn(transform, enemy.transform, 0.4f, 0.2f);
+                        weapon.ShootingEffect.Spawn(transform, enemy.transform, 0.6f, 0.1f);
                     }
 
                     enemy.TakeDamage(weapon.Damage);

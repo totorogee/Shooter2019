@@ -9,25 +9,11 @@ public class LineSpawner : Spawnable
 
     public LineRenderer LineRenderer;
 
-    public Transform Start;
-    public Transform Target;
-
     public Gradient StartColor;
     public Gradient EndColor;
 
     public bool LoopColor = false;
     public float LoopTime = 0.2f;
-
-
-    public void SetStart(Transform start)
-    {
-        Start = start;
-    }
-
-    public void SetTarget(Transform target)
-    {
-        Target = target;
-    }
 
     protected override void OnEnable()
     {
@@ -45,8 +31,8 @@ public class LineSpawner : Spawnable
         Gradient gradient = GradientUtil.Lerp(StartColor, EndColor, LoopColor ? Mathf.PingPong(Time.realtimeSinceStartup , LoopTime ) : Lerp );
         LineRenderer.colorGradient = gradient;
 
-        LineRenderer.SetPosition(0, Vector3.Lerp(Target.position, Start.position ,  StartLenght));
-        LineRenderer.SetPosition(1, Vector3.Lerp(Start.position , Target.position , EndLenght));
+        LineRenderer.SetPosition(0, Vector3.Lerp(EndTarget.position, StartTarget.position ,  StartLenght));
+        LineRenderer.SetPosition(1, Vector3.Lerp(StartTarget.position , EndTarget.position , EndLenght));
 
     }
 }

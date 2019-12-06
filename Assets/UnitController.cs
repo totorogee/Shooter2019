@@ -129,8 +129,7 @@ public class UnitController : PrefabSingleton<UnitController>
                                     if (PosVector.SqDistance(group.Position , enemy.Position) < 4f * 4f)
                                     {
                                         myFleet.Touching = group;
-                                        Vector3 pos = new Vector3(group.Position.x, enemy.Position.y, 0);
-                                        UnitGroupSetting.TouchEffect.NewSpawn().OnSpawn( pos , pos, 0, 1);
+                                        UnitGroupSetting.TouchEffect.Spawn( group.transform , 0, 1);
                                         break;
                                     }
                                 }

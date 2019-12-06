@@ -6,9 +6,10 @@ using UnityEngine;
 public class Spawnable : MonoBehaviour
 {
     public Transform Body;
+    public Transform StartTarget;
+    public Transform EndTarget;
     public Vector3 StartPos = Vector3.zero;
     public Vector3 EndPos = Vector3.zero;
-    public bool StartOnAwake = false;
     public float appearTime = 1f;
     public float disappearTime = 1f;
 
@@ -17,9 +18,6 @@ public class Spawnable : MonoBehaviour
     protected Coroutine disappearCoroutine;
     protected Coroutine appearCoroutine;
     protected Coroutine moveCoroutine;
-
-    protected string IsAppearOnTrigger = "";
-    protected string IsDisappearOnTrigger = "";
 
     protected virtual void OnEnable()
     {
@@ -37,53 +35,43 @@ public class Spawnable : MonoBehaviour
         {
             EndPos = Body.localPosition;
         }
-
-        if (StartOnAwake)
-        {
-
-            OnSpawn(appearTime , disappearTime);
-        }
     }
 
     protected virtual void OnDisable()
     {
-        if ( !string.IsNullOrWhiteSpace( IsAppearOnTrigger))
-        {
-            EventManager.StopListening(IsAppearOnTrigger, Appear);
-        }
 
-        if (!string.IsNullOrWhiteSpace(IsDisappearOnTrigger))
-        {
-            EventManager.StopListening(IsDisappearOnTrigger, Disappear);
-        }
     }
 
-    public virtual void SetStartTrigger(string eventName)
+    public virtual Spawnable Spawn(Vector3 start, Vector3 end, float startTime = 0f, float endTime = 1f)
     {
-        IsAppearOnTrigger = eventName;
-        EventManager.StartListening(eventName, Appear);
+        StartPos = new Vector3(start.x, start.y, Body.localPosition.z);
+        EndPos = new Vector3(end.x, end.y, Body.localPosition.z);
+        return Spawn(startTime , endTime);
     }
 
-    public virtual void SetEndTrigger(string eventName)
+    public virtual Spawnable Spawn(Transform follow , float startTime = 0f, float endTime = 1f)
     {
-        IsDisappearOnTrigger = eventName;
-        EventManager.StartListening(eventName, Disappear);
+        StartTarget = follow;
+        EndTarget = follow;
+        return Spawn(startTime, endTime);
     }
 
-    public virtual void OnSpawn(Vector3 Start , Vector3 End , float startTime = 0f , float endTime = 1f)
+    public virtual Spawnable Spawn(Transform start, Transform end, float startTime = 0f, float endTime = 1f)
     {
-        StartPos = new Vector3(Start.x, Start.y, Body.localPosition.z);
-        EndPos = new Vector3(End.x, End.y, Body.localPosition.z);
-        OnSpawn(startTime, endTime);
+        StartTarget = start;
+        EndTarget = end;
+        return Spawn(startTime, endTime);
     }
 
-    public virtual Spawnable NewSpawn()
+    public virtual Spawnable Spawn(float startTime = 0, float endTime = 1f)
     {
         GameObject go = Instantiate(gameObject);
-        return go.GetComponent<Spawnable>();
+        Spawnable spawnable = go.GetComponent<Spawnable>();
+        spawnable.OnSpawn(startTime, endTime);
+        return spawnable;
     }
 
-    public virtual void OnSpawn(float startTime = 0, float endTime = 1f)
+    protected virtual void OnSpawn(float startTime = 0, float endTime = 1f)
     {
         Disappear();
 
@@ -126,7 +114,6 @@ public class Spawnable : MonoBehaviour
     protected virtual IEnumerator DelayDisappear(float time)
     {
         yield return new WaitForSeconds(time);
-        Disappear();
         Kill();
     }
 
@@ -138,6 +125,12 @@ public class Spawnable : MonoBehaviour
 
         while ( Time.realtimeSinceStartup < startMove + endTime)
         {
+            if (StartTarget != null && EndTarget != null)
+            {
+                StartPos = StartTarget.position;
+                EndPos = EndTarget.position;
+            }
+
             Lerp = (Time.realtimeSinceStartup - startMove) / endTime;
             Body.localPosition = Vector3.Lerp(StartPos, EndPos , Lerp);
             yield return new WaitForEndOfFrame();

@@ -131,19 +131,17 @@ public class UnitBase : MonoBehaviour
     private IEnumerator DelayDead(float delay )
     {
         yield return new WaitForSeconds(delay);
-        Spawnable effect = Group.Setting.DeadEffect.NewSpawn();
+        Spawnable effect = Group.Setting.DeadEffect.Spawn();
         effect.transform.position = transform.position;
-        effect.OnSpawn();
         Body.gameObject.SetActive(false);
 
     }
 
     public void OnStun()
     {
-        Spawnable effect = Group.Setting.StunEffect.NewSpawn();
+        Spawnable effect = Group.Setting.StunEffect.Spawn();
         StunEffect = effect.transform;
         StunEffect.transform.position = transform.position;
-        effect.OnSpawn();
         Body.localPosition = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f);
 
         StunCoroutine = StartCoroutine(DelayStun());
