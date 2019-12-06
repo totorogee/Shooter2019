@@ -72,8 +72,8 @@ public class Spawnable : MonoBehaviour
 
     public virtual void OnSpawn(Vector3 Start , Vector3 End , float startTime = 0f , float endTime = 1f)
     {
-        StartPos = Start;
-        EndPos = End;
+        StartPos = new Vector3(Start.x, Start.y, Body.localPosition.z);
+        EndPos = new Vector3(End.x, End.y, Body.localPosition.z);
         OnSpawn(startTime, endTime);
     }
 
@@ -87,7 +87,7 @@ public class Spawnable : MonoBehaviour
     {
         Disappear();
 
-        Body.localPosition = StartPos;
+        Body.localPosition = new Vector3( StartPos.x , StartPos.y , Body.localPosition.z);
 
         if (moveCoroutine != null)
         {
@@ -154,7 +154,7 @@ public class Spawnable : MonoBehaviour
         Body.gameObject.SetActive(false);
     }
 
-    protected virtual void Kill()
+    public virtual void Kill()
     {
         StopAllCoroutines();
         Destroy(gameObject);

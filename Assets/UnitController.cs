@@ -73,31 +73,32 @@ public class UnitController : PrefabSingleton<UnitController>
         List<UnitFleet> Target = team == TeamName.Red ? UnitFleet.AllBlue : UnitFleet.AllRed;
 
 
-        foreach (var redFleet in Scanning)
+        foreach (var myFleet in Scanning)
         {
-            redFleet.Enemy = new List<UnitGroup>();
+            myFleet.Touching = null;
+            myFleet.Enemy = new List<UnitGroup>();
 
-            foreach (var blueFleet in Target)
+            foreach (var theirFleet in Target)
             {
-                float Range = redFleet.FleetRadis + MaxWeaponRange + blueFleet.FleetRadis;
+                float Range = myFleet.FleetRadis + MaxWeaponRange + theirFleet.FleetRadis;
 
-                if (PosVector.SqDistance(redFleet.Position, blueFleet.Position) < Range * Range)
+                if (PosVector.SqDistance(myFleet.Position, theirFleet.Position) < Range * Range)
                 {
-                    foreach (var enemy in blueFleet.UnitGroups)
+                    foreach (var enemy in theirFleet.UnitGroups)
                     {
                         if (!enemy.Alive)
                         {
                             continue;
                         }
 
-                        if (PosVector.SqDistance(redFleet.Position, enemy.Position) < Range * Range)
+                        if (PosVector.SqDistance(myFleet.Position, enemy.Position) < Range * Range)
                         { 
-                            redFleet.Enemy.Add(enemy);
+                            myFleet.Enemy.Add(enemy);
                         }
 
                     }
 
-                    foreach (var scanner in redFleet.UnitScanners)
+                    foreach (var scanner in myFleet.UnitScanners)
                     {
                         if (!scanner.Alive)
                         {
@@ -107,10 +108,10 @@ public class UnitController : PrefabSingleton<UnitController>
                         Range = scanner.WeaponDistant + scanner.Radius;
                         scanner.Enemy = new List<UnitGroup>();
 
-                        for (int i = 0; i < redFleet.Enemy.Count; i++)
+                        for (int i = 0; i < myFleet.Enemy.Count; i++)
                         {
-                            if (PosVector.SqDistance(scanner.Position, redFleet.Enemy[i].Position) < Range * Range)
-                                scanner.Enemy.Add(redFleet.Enemy[i]);
+                            if (PosVector.SqDistance(scanner.Position, myFleet.Enemy[i].Position) < Range * Range)
+                                scanner.Enemy.Add(myFleet.Enemy[i]);
                         }
 
                         scanner.Enemy.Sort((x, y) =>
@@ -118,6 +119,27 @@ public class UnitController : PrefabSingleton<UnitController>
                             return PosVector.SqDistance(scanner.AimPosition, x.Position).CompareTo
                             (PosVector.SqDistance(scanner.AimPosition, y.Position));
                         });
+
+                        if (myFleet.Touching == null)
+                        {
+                            foreach (var group in scanner.UnitGroups)
+                            {
+                                foreach (var enemy in scanner.Enemy)
+                                {
+                                    if (PosVector.SqDistance(group.Position , enemy.Position) < 4f * 4f)
+                                    {
+                                        myFleet.Touching = group;
+                                        Vector3 pos = new Vector3(group.Position.x, enemy.Position.y, 0);
+                                        UnitGroupSetting.TouchEffect.NewSpawn().OnSpawn( pos , pos, 0, 1);
+                                        break;
+                                    }
+                                }
+                                if (myFleet.Touching != null)
+                                {
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -136,9 +158,9 @@ public class UnitController : PrefabSingleton<UnitController>
     private void Plan(TeamName team)
     {
         List<UnitFleet> Fleets = team == TeamName.Red ? UnitFleet.AllRed : UnitFleet.AllBlue;
-        foreach (var redFleet in Fleets )
+        foreach (var myFleet in Fleets )
         {
-            foreach (var scanner in redFleet.UnitScanners)
+            foreach (var scanner in myFleet.UnitScanners)
             {
                 if (!scanner.Alive)
                 {
@@ -167,7 +189,6 @@ public class UnitController : PrefabSingleton<UnitController>
                     {
                         Debug.Log("Yes");
                     }
-
                 }
             }
         }
