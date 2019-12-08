@@ -121,13 +121,12 @@ public class GroupTestingController : MonoBehaviour
             if (hJoystick.Horizontal != 0)
             {
                 EventManager.TriggerEvent(EventList.FleetRotation);
-                Debug.Log(UnitFleet.AllRed[CurrentSelection].RotationSpeed); 
             }
         }
     }
 
     private void UpdateUI()
-    {
+    { 
         for (int i = 0; i < UnitFleet.AllRed.Count; i++)
         {
             var button = SavedFormationButtons[i];

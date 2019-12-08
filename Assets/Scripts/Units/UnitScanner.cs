@@ -22,7 +22,7 @@ public class UnitScanner : MonoBehaviour
         get
         {
             PosVector result = (StartingPos * Mathf.RoundToInt(Fleet.Density)) * 0.5f;
-            return PosVector.Rotate(result, Fleet.Angle);
+            return result.Rotate(Fleet.Angle);
         }
     }
 
@@ -39,7 +39,7 @@ public class UnitScanner : MonoBehaviour
         get
         {
             PosVector result = (StartingPos * Mathf.RoundToInt(Fleet.Density) * 0.5f) + new PosVector(0, WeaponDistant / 2);
-            return PosVector.Rotate(result, Fleet.Angle) + Fleet.Position;
+            return result.Rotate(Fleet.Angle) + Fleet.Position;
         }
     }
 

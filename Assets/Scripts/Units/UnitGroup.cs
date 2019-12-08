@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TeamName
+public struct Blocks
 {
-    Red =0,
-    Blue =1
+    float Direction;
+    float Angle;
+    float SqDistant;
 }
 
 public class UnitGroup : MonoBehaviour
@@ -13,11 +14,15 @@ public class UnitGroup : MonoBehaviour
     public static List<UnitGroup> AllRed = new List<UnitGroup>();
     public static List<UnitGroup> AllBlue = new List<UnitGroup>();
 
-    public UnitFleet Fleet;
     public UnitGroupSetting Setting;
-
     public List<UnitGroup> LinkedGroup; // TODO Nearest group
 
+    public List<UnitGroup> Enemy = new List<UnitGroup>();
+
+    public List<Blocks> EnemyBlocks = new List<Blocks>();
+    public List<Blocks> FriendlyBlocks = new List<Blocks>();
+
+    public UnitFleet Fleet;
     public PosVector StartingPos;
 
     public PosVector LocalPosition
@@ -25,7 +30,7 @@ public class UnitGroup : MonoBehaviour
         get
         {
             PosVector result = (StartingPos * Mathf.RoundToInt(Fleet.Density)) * 0.5f;
-            return PosVector.Rotate(result, Fleet.Angle);
+            return result.Rotate(Fleet.Angle);
         }
     }
     public PosVector Position
@@ -101,16 +106,21 @@ public class UnitGroup : MonoBehaviour
         }
     }
 
-    public UnitGroup CheckAttack(List<UnitGroup> enemyList )
+    public UnitGroup CheckAttack()
     {
         if(!Alive)
         {
             return null;
         }
 
-        for (int i = 0; i < enemyList.Count; i++)
+        if (Enemy.Count != 0)
         {
-            UnitGroup enemy = enemyList[i];
+            Debug.Log(Enemy.Count + " " + Fleet.Team);
+        }
+
+        for (int i = 0; i < Enemy.Count; i++)
+        {
+            UnitGroup enemy = Enemy[i];
             float Angle =  PosVector.Angle(Position, enemy.Position) - Fleet.Angle;
             if (Angle < 0)
             {
@@ -129,8 +139,8 @@ public class UnitGroup : MonoBehaviour
 
                     if (Fleet.Team == TeamName.Red)
                     {
-                        weapon.WarnningEffect.Spawn(transform , enemy.transform , 0f , 0.2f);
-                        weapon.ShootingEffect.Spawn(transform , enemy.transform , 0.2f , 0.1f);
+                        weapon.WarnningEffect.Spawn(transform, enemy.transform, 0f, 0.2f);
+                        weapon.ShootingEffect.Spawn(transform, enemy.transform, 0.2f, 0.1f);
                     }
                     else
                     {
@@ -170,7 +180,7 @@ public class UnitGroup : MonoBehaviour
 
         foreach (var item in UnitBases)
         {
-            item.TakeStun(time); ;
+            item.TakeStun(time);
         }
     }
 }

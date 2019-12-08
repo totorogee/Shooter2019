@@ -3,6 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
+public static class PosVectorUtil
+{
+    public static PosVector Rotate( this PosVector A, int degrees)
+    {
+        float sin = Mathf.Sin(-degrees * Mathf.Deg2Rad);
+        float cos = Mathf.Cos(-degrees * Mathf.Deg2Rad);
+
+        float tx = A.x;
+        float ty = A.y;
+
+        A.x = Mathf.RoundToInt((cos * tx) - (sin * ty));
+        A.y = Mathf.RoundToInt((sin * tx) + (cos * ty));
+
+        return A;
+    }
+
+
+
+    public static Vector3 ToVector3(this PosVector A)
+    {
+        return new Vector3(A.x, A.y, 0);
+    }
+
+}
+
 [System.Serializable]
 public struct PosVector
 {
@@ -57,26 +82,6 @@ public struct PosVector
         return (A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y);
     }
 
-
-    public static PosVector Rotate(PosVector A, int degrees)
-    {
-        float sin = Mathf.Sin(-degrees * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(-degrees * Mathf.Deg2Rad);
-
-        float tx = A.x;
-        float ty = A.y;
-
-        A.x = Mathf.RoundToInt((cos * tx) - (sin * ty));
-        A.y = Mathf.RoundToInt((sin * tx) + (cos * ty));
-
-        return A;
-    }
-
-    public static Vector3 ToVector3(PosVector A)
-    {
-        return new Vector3(A.x, A.y, 0);
-    }
-
     public static float Angle(PosVector A, PosVector B)
     {
         PosVector temp = B - A;
@@ -90,53 +95,19 @@ public struct PosVector
         return (Mathf.Abs(result - 360) <= float.Epsilon) ? 0 : result;
     }
 
+    public static float BlockedAngle(PosVector A, PosVector B, float UnitSize = 1f)
+    {
+        if (A == B)
+        {
+            return 360f;
+        }
+
+        float distant = Mathf.Sqrt(SqDistance(A, B));
+        return Mathf.Atan((UnitSize / 2f) / distant) * Mathf.Rad2Deg;
+    }
+
     public override string ToString()
     {
         return "x:" + x + ",y:" + y;
     }
-}
-
-public static class VectorTools
-{
-
-    #region SandBox
-
-    public static int ToInt(this Vector2Int vector)
-    {
-        return (vector.x << 16) | vector.y & 0xFFFF;
-    }
-
-    public static Vector2Int ToVector2Int(this int input)
-    {
-        return new Vector2Int(input >> 16, (short)(input & 0xFFFF));
-    }
-
-    public static Vector2Int RotatedVectors(this Vector2Int input, int angle)
-    {
-        switch (angle % 90)
-        {
-            case 0:
-                return input;
-            case 1:
-                return new Vector2Int(input.y, -input.x);
-            case 2:
-                return input * -1;
-            case 3:
-                return new Vector2Int(-input.y, input.x);
-            default:
-                return input;
-        }
-    }
-
-    public static List<Vector2Int> RotatedVectors(this Vector2Int input)
-    {
-        return new List<Vector2Int>
-        {
-            input,
-            new Vector2Int(input.y, -input.x),
-            input * -1,
-            new Vector2Int(-input.y, input.x),
-        };
-    }
-    #endregion
 }

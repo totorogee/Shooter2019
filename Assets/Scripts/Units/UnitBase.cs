@@ -4,9 +4,9 @@ using UnityEngine;
 
 public enum UnitBaseStatus
 {
-    Nil =0,
-    Stunned =1,
-    Dead =2
+    Nil = 0,
+    Stunned = 1,
+    Dead = 2
 }
 
 public class UnitBase : MonoBehaviour
