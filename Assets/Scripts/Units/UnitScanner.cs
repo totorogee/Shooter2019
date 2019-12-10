@@ -10,6 +10,7 @@ public class UnitScanner : MonoBehaviour
 
     public List<UnitGroup> UnitGroups = new List<UnitGroup>();
     public List<UnitGroup> Enemy = new List<UnitGroup>();
+    public List<UnitGroup> NearBy = new List<UnitGroup>();
 
     public int Radius = 0;
     public int WeaponDistant = 0;

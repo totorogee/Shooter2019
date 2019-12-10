@@ -54,4 +54,4 @@ MonoBehaviour:
     type: 3}
   UnitGroupSetting: {fileID: 11400000, guid: 47f098f906e2e4586b286df78698c224, type: 2}
   status: 0
-  FieldFrameLenght: 0.2
+  FieldFrameLenght: 1

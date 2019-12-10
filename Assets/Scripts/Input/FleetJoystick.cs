@@ -25,6 +25,7 @@ public class FleetJoystick : VariableJoystick
     public void UpdateSpeed()
     {
         var fleet = UnitFleet.AllRed[GroupTestingController.Instance.CurrentSelection];
+        fleet.SetDirty();
 
         direction = fleet.Angle;
         background.eulerAngles = new Vector3(background.eulerAngles.x, background.eulerAngles.y, -direction);

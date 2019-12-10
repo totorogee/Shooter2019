@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetingData // TODO
+[System.Serializable]
+public class TargetingData
 {
-    UnitGroup Target;
-
-    float Direction;
-    float Angle;
-    float SqDistant;
+    public UnitGroup Target;
+    public float Direction;
+    public float BlockedAngle;
+    public float SqDistant;
 }
 
 public enum UnitGroupActionStatus // TODO
@@ -28,10 +28,8 @@ public class UnitGroup : MonoBehaviour
     public UnitGroupSetting Setting;
     public List<UnitGroup> LinkedGroup; // TODO Nearest group
 
-    public List<UnitGroup> Enemy = new List<UnitGroup>();
-
-    public List<TargetingData> EnemyBlocks = new List<TargetingData>();
-    public List<TargetingData> FriendlyBlocks = new List<TargetingData>();
+    public List<TargetingData> EnemyTargets = new List<TargetingData>();
+    public List<TargetingData> FriendlyTargets = new List<TargetingData>();
 
     public UnitFleet Fleet;
     public PosVector StartingPos;
@@ -143,14 +141,14 @@ public class UnitGroup : MonoBehaviour
             return null;
         }
 
-        if (Enemy.Count != 0)
+        if (EnemyTargets.Count != 0)
         {
-            Debug.Log(Enemy.Count + " " + Fleet.Team);
+            //Debug.Log(Enemy.Count + " " + Fleet.Team);
         }
 
-        for (int i = 0; i < Enemy.Count; i++)
+        for (int i = 0; i < EnemyTargets.Count; i++)
         {
-            UnitGroup enemy = Enemy[i];
+            UnitGroup enemy = EnemyTargets[i].Target;
             float Angle =  PosVector.Angle(Position, enemy.Position) - Fleet.Angle;
             if (Angle < 0)
             {

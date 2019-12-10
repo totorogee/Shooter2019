@@ -12,6 +12,26 @@ public class AttackPlaningData // TODO
 
 public class UnitFleet : MonoBehaviour
 {
+    public int FleetRadis
+    {
+        get
+        {
+            if (fleetRadis == 0)
+            {
+                foreach (var item in UnitGroups)
+                {
+                    if (item.Alive)
+                    {
+                        fleetRadis = Mathf.Max(fleetRadis, PosVector.SqDistance(item.Position, Position));
+                    }
+                }
+                fleetRadis = Mathf.RoundToInt(Mathf.Sqrt(fleetRadis));
+            }
+            return fleetRadis;
+        }
+    }
+    private int fleetRadis = 0;
+
     public PosVector Position
     {
         get
@@ -104,9 +124,9 @@ public class UnitFleet : MonoBehaviour
         }
     }
 
+    public int WeaponDistant = 0;
     public List<UnitGroup> Enemy = new List<UnitGroup>();
-
-    public int FleetRadis = 0;
+    public List<UnitGroup> NearBy = new List<UnitGroup>();
 
     public bool DidInit = false;
 
@@ -130,6 +150,7 @@ public class UnitFleet : MonoBehaviour
     {
         position = new PosVector(0, 0);
         angle = 0;
+        fleetRadis = 0;
     }
 
     public void Init(int formationID)
@@ -148,7 +169,6 @@ public class UnitFleet : MonoBehaviour
             AllBlue.Add(this);
         }
         SetScanner();
-        UpdateFleetRadis();
 
         //Debug.Log("Init Time : " + (Time.realtimeSinceStartup - time));
     }
@@ -161,7 +181,6 @@ public class UnitFleet : MonoBehaviour
         {
             item.transform.localPosition = new Vector3(item.StartingPos.x * density / 2, item.StartingPos.y * density / 2, item.transform.localPosition.z);
         }
-        UpdateFleetRadis();
     }
 
     public void ChangeFormation()
@@ -253,6 +272,7 @@ public class UnitFleet : MonoBehaviour
             }
 
             item.WeaponDistant = distant;
+            WeaponDistant = Mathf.Max(WeaponDistant, distant);
         }
     }
 
@@ -296,17 +316,5 @@ public class UnitFleet : MonoBehaviour
 
     }
 
-    private void UpdateFleetRadis()
-    {
-        FleetRadis = 0;
 
-        foreach (var item in UnitGroups)
-        {
-            FleetRadis = Mathf.Max(FleetRadis, PosVector.SqDistance(item.Position, Position));
-        }
-
-        FleetRadis = Mathf.RoundToInt(Mathf.Sqrt(FleetRadis));
-
-
-    }
 }
