@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class AttackPlaningData // TODO
+{
+    UnitGroup Target;
+
+    float currentHP;
+    float totalDamage;
+}
+
 public class UnitFleet : MonoBehaviour
 {
     public PosVector Position

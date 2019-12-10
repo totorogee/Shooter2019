@@ -4,16 +4,18 @@ using System.Collections.Generic;
 
 public enum ClockStatus
 {
-    Scan = 0,
-    Plan = 1,
-    //Shoot = 2,
-    //Damage = 3,
+    Init = 0, // TODO
+    Scan = 1,
+    Plan = 2,
+    //Shoot = 3,
     //Move = 4,
     //Scyn = 5
 }
 
 public class UnitController : PrefabSingleton<UnitController>
 {
+    public const float TouchRange = 4;
+
     public int MaxWeaponRange = 20;
 
     public UnitFleet UnitFleetPrefab;
@@ -79,88 +81,104 @@ public class UnitController : PrefabSingleton<UnitController>
 
             foreach (var theirFleet in Target)
             {
-                // Check Enemy Range
+                Scan(myFleet, theirFleet);
+            }
+        }
+    }
 
-                float Range = myFleet.FleetRadis + MaxWeaponRange + theirFleet.FleetRadis;
+    private void Scan (UnitFleet myFleet, UnitFleet theirFleet)
+    {
+        float Range = myFleet.FleetRadis + MaxWeaponRange + theirFleet.FleetRadis;
+        Range *= Range;
 
-                if (PosVector.SqDistance(myFleet.Position, theirFleet.Position) < Range * Range)
+        if (PosVector.SqDistance(myFleet.Position, theirFleet.Position) > Range)
+        {
+            return;
+        }
+
+        foreach (var enemy in theirFleet.UnitGroups)
+        {
+            if (!enemy.Alive)
+            {
+                continue;
+            }
+
+            if (PosVector.SqDistance(myFleet.Position, enemy.Position) < Range)
+            {
+                myFleet.Enemy.Add(enemy);
+            }
+        }
+
+        foreach (var scanner in myFleet.UnitScanners)
+        {
+            if (!scanner.Alive)
+            {
+                continue;
+            }
+
+            Range = scanner.WeaponDistant + scanner.Radius;
+            Range *= Range;
+
+            scanner.Enemy = new List<UnitGroup>();
+            for (int i = 0; i < myFleet.Enemy.Count; i++)
+            {
+                if (PosVector.SqDistance(scanner.Position, myFleet.Enemy[i].Position) < Range)
+                    scanner.Enemy.Add(myFleet.Enemy[i]);
+            }
+
+            if (scanner.Enemy.Count == 0)
+            {
+                continue;
+            }
+
+            Range = scanner.WeaponDistant;
+            Range *= Range;
+
+            foreach (var group in scanner.UnitGroups)
+            {
+                group.Enemy = new List<UnitGroup>();
+                for (int i = 0; i < scanner.Enemy.Count; i++)
                 {
-                    foreach (var enemy in theirFleet.UnitGroups)
-                    {
-                        if (!enemy.Alive)
-                        {
-                            continue;
-                        }
-
-                        if (PosVector.SqDistance(myFleet.Position, enemy.Position) < Range * Range)
-                        { 
-                            myFleet.Enemy.Add(enemy);
-                        }
-                    }
-
-                    foreach (var scanner in myFleet.UnitScanners)
-                    {
-                        if (!scanner.Alive)
-                        {
-                            continue;
-                        }
-
-                        Range = scanner.WeaponDistant + scanner.Radius;
-                        scanner.Enemy = new List<UnitGroup>();
-
-                        for (int i = 0; i < myFleet.Enemy.Count; i++)
-                        {
-                            if (PosVector.SqDistance(scanner.Position, myFleet.Enemy[i].Position) < Range * Range)
-                                scanner.Enemy.Add(myFleet.Enemy[i]);
-                        }
-
-                        scanner.Enemy.Sort((x, y) =>
-                        {
-                            return PosVector.SqDistance(scanner.AimPosition, x.Position).CompareTo
-                            (PosVector.SqDistance(scanner.AimPosition, y.Position));
-                        });
-
-                        Range = scanner.WeaponDistant;
-                        foreach (var group in scanner.UnitGroups)
-                        {
-                            group.Enemy = new List<UnitGroup>();
-                            for (int i = 0; i < scanner.Enemy.Count; i++)
-                            {
-                                if (PosVector.SqDistance(group.Position, scanner.Enemy[i].Position) < Range * Range)
-                                    group.Enemy.Add(scanner.Enemy[i]);
-                            }
-
-                            group.Enemy.Sort((x, y) =>
-                            {
-                                return PosVector.SqDistance(group.Position, x.Position).CompareTo
-                                (PosVector.SqDistance(group.Position, y.Position));
-                            });
-                        }
-
-                        // Check Touch
-
-                        if (myFleet.Touching == null)
-                        {
-                            foreach (var group in scanner.UnitGroups)
-                            {
-                                foreach (var enemy in scanner.Enemy)
-                                {
-                                    if (PosVector.SqDistance(group.Position , enemy.Position) < 4f * 4f)
-                                    {
-                                        myFleet.Touching = group;
-                                        UnitGroupSetting.TouchEffect.Spawn( group.transform , 0, 1);
-                                        break;
-                                    }
-                                }
-
-                                if (myFleet.Touching != null)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    if (PosVector.SqDistance(group.Position, scanner.Enemy[i].Position) < Range)
+                        group.Enemy.Add(scanner.Enemy[i]);
                 }
+
+                if (group.Enemy.Count == 0)
+                {
+                    continue;
+                }
+
+                group.Enemy.Sort((x, y) =>
+                {
+                    return PosVector.SqDistance(group.Position, x.Position).CompareTo
+                    (PosVector.SqDistance(group.Position, y.Position));
+                });
+
+                group.ScanRange(Range);
+            }
+        }
+
+        // Check Touch
+        if (myFleet.Touching != null)
+        {
+            return;
+        }
+
+        foreach (var group in myFleet.UnitGroups)
+        {
+            foreach (var enemy in group.Enemy)
+            {
+                if (PosVector.SqDistance(group.Position, enemy.Position) < TouchRange * TouchRange)
+                {
+                    myFleet.Touching = group;
+                    UnitGroupSetting.TouchEffect.Spawn(group.transform, 0, 1);
+                    break;
+                }
+            }
+
+            if (myFleet.Touching != null)
+            {
+                break;
             }
         }
     }
@@ -176,7 +194,7 @@ public class UnitController : PrefabSingleton<UnitController>
     private void Plan(TeamName team)
     {
         List<UnitFleet> Fleets = team == TeamName.Red ? UnitFleet.AllRed : UnitFleet.AllBlue;
-        foreach (var myFleet in Fleets )
+        foreach (var myFleet in Fleets)
         {
             foreach (var scanner in myFleet.UnitScanners)
             {

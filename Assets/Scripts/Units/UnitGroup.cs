@@ -2,11 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Blocks
+public class TargetingData
 {
+    UnitGroup Target;
+
     float Direction;
     float Angle;
     float SqDistant;
+}
+
+public enum UnitGroupActionStatus
+{
+    Cleaned =0,
+    ScannedEnemy =1,
+    ScannedBlocks = 2,
+    PlannedAttact =3,
+    Moved =4
 }
 
 public class UnitGroup : MonoBehaviour
@@ -19,8 +30,8 @@ public class UnitGroup : MonoBehaviour
 
     public List<UnitGroup> Enemy = new List<UnitGroup>();
 
-    public List<Blocks> EnemyBlocks = new List<Blocks>();
-    public List<Blocks> FriendlyBlocks = new List<Blocks>();
+    public List<TargetingData> EnemyBlocks = new List<TargetingData>();
+    public List<TargetingData> FriendlyBlocks = new List<TargetingData>();
 
     public UnitFleet Fleet;
     public PosVector StartingPos;
@@ -108,6 +119,8 @@ public class UnitGroup : MonoBehaviour
 
     public UnitGroup CheckAttack()
     {
+        Debug.Log("TODO : Attack with block info");
+
         if(!Alive)
         {
             return null;
@@ -182,5 +195,10 @@ public class UnitGroup : MonoBehaviour
         {
             item.TakeStun(time);
         }
+    }
+
+    public void ScanRange(float range )
+    {
+        Debug.Log("  TODO : Get all Block info ");
     }
 }
