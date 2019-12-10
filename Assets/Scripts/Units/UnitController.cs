@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public enum ClockStatus
 {
-    Init = 0, // TODO
+    ClockInit = 0,
     Scan = 1,
     Plan = 2,
     //Shoot = 3,
@@ -35,12 +35,14 @@ public class UnitController : PrefabSingleton<UnitController>
 
     private void OnEnable()
     {
+        EventManager.StartListening("ClockInit", OnClockInit);
         EventManager.StartListening("Scan", OnScan);
         EventManager.StartListening("Plan", OnPlan);
     }
 
     private void OnDisable()
     {
+        EventManager.StopListening("ClockInit", OnClockInit);
         EventManager.StopListening("Scan", OnScan);
         EventManager.StopListening("Plan", OnPlan);
     }
@@ -59,6 +61,38 @@ public class UnitController : PrefabSingleton<UnitController>
             status = (ClockStatus)(turn % EnumUtil.GetValuesList<ClockStatus>().Count);
             EventManager.TriggerEvent(status.ToString());
         }
+    }
+
+    private void OnClockInit(UnitFleet fleet)
+    {
+        fleet.SetDirty();
+
+        foreach (var scanner in fleet.UnitScanners)
+        {
+            scanner.SetDirty();
+        }
+
+        foreach (var group in fleet.UnitGroups)
+        {
+            group.SetDirty();
+        }
+    }
+
+    private void OnClockInit()
+    {
+        var time = Time.realtimeSinceStartup;
+
+        foreach (var fleet in UnitFleet.AllRed)
+        {
+            OnClockInit(fleet);
+        }
+
+        foreach (var fleet in UnitFleet.AllBlue)
+        {
+            OnClockInit(fleet);
+        }
+
+        Debug.Log("ClockInit Time : " + (Time.realtimeSinceStartup - time));
     }
 
     private void OnScan()

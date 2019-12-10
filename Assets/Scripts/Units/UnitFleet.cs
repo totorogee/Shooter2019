@@ -16,17 +16,29 @@ public class UnitFleet : MonoBehaviour
     {
         get
         {
-            return new PosVector(TheGroup.localPosition);
+            if (position == new PosVector(0, 0))
+            {
+                position = new PosVector(TheGroup.localPosition);
+            }
+
+            return position;
         }
     }
+    private PosVector position = new PosVector (0,0);
 
     public int Angle
     {
         get
         {
-            return Mathf.RoundToInt(-TheGroup.localEulerAngles.z + 360);
+            if (angle == 0)
+            {
+                angle = Mathf.RoundToInt(-TheGroup.localEulerAngles.z + 360);
+            }
+
+            return angle;
         }
     }
+    private int angle = 0;
 
     public UnitGroup Touching;
 
@@ -113,6 +125,12 @@ public class UnitFleet : MonoBehaviour
     public int CurrentFormationID;
 
     public float Density = 2;
+
+    public void SetDirty()
+    {
+        position = new PosVector(0, 0);
+        angle = 0;
+    }
 
     public void Init(int formationID)
     {

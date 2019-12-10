@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetingData
+public class TargetingData // TODO
 {
     UnitGroup Target;
 
@@ -11,7 +11,7 @@ public class TargetingData
     float SqDistant;
 }
 
-public enum UnitGroupActionStatus
+public enum UnitGroupActionStatus // TODO
 {
     Cleaned =0,
     ScannedEnemy =1,
@@ -40,17 +40,28 @@ public class UnitGroup : MonoBehaviour
     {
         get
         {
-            PosVector result = (StartingPos * Mathf.RoundToInt(Fleet.Density)) * 0.5f;
-            return result.Rotate(Fleet.Angle);
+            if (localPosition == new PosVector(0, 0))
+            {
+                PosVector result = (StartingPos * Mathf.RoundToInt(Fleet.Density)) * 0.5f;
+                localPosition = result.Rotate(Fleet.Angle);
+            }
+            return localPosition;
         }
     }
+    private PosVector localPosition;
+
     public PosVector Position
     {
         get
         {
-            return LocalPosition + Fleet.Position;
+            if (position == new PosVector(0, 0))
+            {
+                position = LocalPosition + Fleet.Position;
+            }
+            return position;
         }
     }
+    private PosVector position;
 
     public bool Alive
     {
@@ -85,6 +96,12 @@ public class UnitGroup : MonoBehaviour
     public List<UnitBase> UnitBases = new List<UnitBase>();
 
     private bool didInit;
+
+    public void SetDirty()
+    {
+        position = new PosVector(0, 0);
+        localPosition = new PosVector(0, 0);
+    }
 
     public void Init(UnitFleet fleet , PosVector starting,  int size )
     {
