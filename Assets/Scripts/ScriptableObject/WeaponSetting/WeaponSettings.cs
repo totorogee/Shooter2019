@@ -10,6 +10,10 @@ public class WeaponSettings : ScriptableObject
     public string WeaponName => weaponName;
 
     [SerializeField]
+    private int maxPenetrate = 2;
+    public int MaxPenetrate => maxPenetrate;
+
+    [SerializeField]
 	private int range = 20;
 	public int Range => range;
 
@@ -28,14 +32,6 @@ public class WeaponSettings : ScriptableObject
     [SerializeField]
     private int stunTime = 1;
     public int StunTime => stunTime;
-
-    [SerializeField]
-    private int blockDamagePenalty = 2;
-    public int BlockDamagePenalty => blockDamagePenalty;
-
-    [SerializeField]
-    private int blockRangePenalty = 2;
-    public int BlockRangePenalty => blockRangePenalty;
 
     public Spawnable WarnningEffect;
     public Spawnable ShootingEffect;
