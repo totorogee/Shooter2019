@@ -95,15 +95,21 @@ public struct PosVector
         return (Mathf.Abs(result - 360) <= float.Epsilon) ? 0 : result;
     }
 
-    public static float BlockedAngle(PosVector A, PosVector B, float UnitSize = 1f)
+    public static float BlockedAngle(PosVector A, PosVector B, float UnitSize = 3f , float MaxBlock = 45f )
     {
         if (A == B)
         {
             return 360f;
         }
 
-        float distant = Mathf.Sqrt(SqDistance(A, B));
-        return Mathf.Atan((UnitSize / 2f) / distant) * Mathf.Rad2Deg;
+        float distant = Mathf.Sqrt(SqDistance(A, B) - UnitSize / 2 );
+
+        if (distant <= UnitSize )
+        {
+            return MaxBlock;
+        }
+
+        return Mathf.Min(MaxBlock, Mathf.Atan((UnitSize / 2f) / distant) * Mathf.Rad2Deg);
     }
 
     public override string ToString()

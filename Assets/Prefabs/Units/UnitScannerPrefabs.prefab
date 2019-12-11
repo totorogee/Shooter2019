@@ -49,6 +49,7 @@ MonoBehaviour:
   Aim: {fileID: 4113562272257945475}
   UnitGroups: []
   Enemy: []
+  NearBy: []
   Radius: 0
   WeaponDistant: 0
   Fleet: {fileID: 0}

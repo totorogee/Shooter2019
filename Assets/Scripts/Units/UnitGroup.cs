@@ -3,12 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class TargetingData
+public class UnitScanData
 {
     public UnitGroup Target;
     public float Direction;
     public float BlockedAngle;
     public float SqDistant;
+
+    public int enemyBlockCount = 0;
+    public int friendlyBlockCount = 0;
+    public int ownFleetBlockCount = 0;
+
+    public static bool IsBlocked(UnitScanData target , UnitScanData other)
+    {
+        float angle = target.Direction - other.Direction;
+
+        if (angle > 180)
+        {
+            angle -= 360;
+        }
+
+        if (Mathf.Abs(angle) > other.BlockedAngle)
+        {
+            return false;
+        }
+
+        return target.SqDistant >= other.SqDistant;
+    }
 }
 
 public enum UnitGroupActionStatus // TODO
@@ -28,8 +49,9 @@ public class UnitGroup : MonoBehaviour
     public UnitGroupSetting Setting;
     public List<UnitGroup> LinkedGroup; // TODO Nearest group
 
-    public List<TargetingData> EnemyTargets = new List<TargetingData>();
-    public List<TargetingData> FriendlyTargets = new List<TargetingData>();
+    public List<UnitScanData> EnemyInRange = new List<UnitScanData>();
+    public List<UnitScanData> FriendlyInRange = new List<UnitScanData>();
+    public List<UnitScanData> OwnFleet = new List<UnitScanData>();
 
     public UnitFleet Fleet;
     public PosVector StartingPos;
@@ -40,7 +62,7 @@ public class UnitGroup : MonoBehaviour
         {
             if (localPosition == new PosVector(0, 0))
             {
-                PosVector result = (StartingPos * Mathf.RoundToInt(Fleet.Density)) * 0.5f;
+                PosVector result = StartingPos * Mathf.RoundToInt(Fleet.Density) * 0.5f;
                 localPosition = result.Rotate(Fleet.Angle);
             }
             return localPosition;
@@ -141,19 +163,21 @@ public class UnitGroup : MonoBehaviour
             return null;
         }
 
-        if (EnemyTargets.Count != 0)
+        if (EnemyInRange.Count != 0)
         {
             //Debug.Log(Enemy.Count + " " + Fleet.Team);
         }
 
-        for (int i = 0; i < EnemyTargets.Count; i++)
+        for (int i = 0; i < EnemyInRange.Count; i++)
         {
-            UnitGroup enemy = EnemyTargets[i].Target;
+            UnitGroup enemy = EnemyInRange[i].Target;
+
             float Angle =  PosVector.Angle(Position, enemy.Position) - Fleet.Angle;
             if (Angle < 0)
             {
                 Angle += 360;
             }
+
             float SqDistant = PosVector.SqDistance(Position, enemy.Position);
 
             for (int j = 0; j < Setting.Weapons.Count; j++)

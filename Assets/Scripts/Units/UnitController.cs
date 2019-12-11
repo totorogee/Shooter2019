@@ -128,10 +128,57 @@ public class UnitController : PrefabSingleton<UnitController>
         }
     }
 
+    private void ScanSelf (UnitFleet fleet)
+    {
+        foreach (var group in fleet.UnitGroups)
+        {
+            if ( !group.Alive )
+            {
+                continue;
+            }
+
+            group.OwnFleet = new List<UnitScanData>();
+            foreach (var other in fleet.UnitGroups)
+            {
+                if (group == other || !other.Alive)
+                {
+                    continue;
+                }
+
+                PosVector groupPos = group.StartingPos * Mathf.RoundToInt(fleet.Density) * 0.5f;
+                PosVector otherPos = other.StartingPos * Mathf.RoundToInt(fleet.Density) * 0.5f;
+
+                UnitScanData targetingData = new UnitScanData
+                {
+                    Target = other,
+                    Direction = PosVector.Angle(groupPos, otherPos) - fleet.Angle,
+                    BlockedAngle = PosVector.BlockedAngle(groupPos, otherPos),
+                    SqDistant = PosVector.SqDistance(groupPos, otherPos)
+                };
+                if (targetingData.Direction < 0)
+                {
+                    targetingData.Direction += 360;
+                }
+
+                group.OwnFleet.Add(targetingData);
+
+
+            }
+            group.OwnFleet.Sort((x, y) =>
+            {
+                return x.SqDistant.CompareTo(y.SqDistant);
+            });
+        }
+    }
+
     private void Scan (UnitFleet myFleet, UnitFleet theirFleet)
     {
-        bool IsEnemy = myFleet.Team != theirFleet.Team; //
-        bool IsSelf = myFleet == theirFleet; //
+        bool IsEnemy = myFleet.Team != theirFleet.Team;
+        if (myFleet == theirFleet)
+        {
+            ScanSelf(myFleet);
+            return;
+        }
 
         float Range = myFleet.FleetRadis + myFleet.WeaponDistant + theirFleet.FleetRadis;
         Range *= Range;
@@ -192,58 +239,70 @@ public class UnitController : PrefabSingleton<UnitController>
 
             foreach (var group in scanner.UnitGroups)
             {
+                if (!group.Alive)
+                    continue;
+
                 if (IsEnemy)
                 {
-                    group.EnemyTargets = new List<TargetingData>();
+                    group.EnemyInRange = new List<UnitScanData>();
                     foreach (var other in scanner.Enemy)
                     {
                         if (PosVector.SqDistance(group.Position, other.Position) < Range)
                         {
-                            TargetingData targetingData = new TargetingData
+                            UnitScanData targetingData = new UnitScanData
                             {
                                 Target = other,
-                                Direction = PosVector.Angle(group.Position, other.Position),
+                                Direction = PosVector.Angle(group.Position, other.Position) - myFleet.Angle,
                                 BlockedAngle = PosVector.BlockedAngle(group.Position, other.Position),
                                 SqDistant = PosVector.SqDistance(group.Position, other.Position)
                             };
-                            group.EnemyTargets.Add(targetingData);
+                            if (targetingData.Direction < 0)
+                            {
+                                targetingData.Direction += 360;
+                            }
+
+                            group.EnemyInRange.Add(targetingData);
                         }
                     }
 
-                    if (group.EnemyTargets.Count == 0)
+                    if (group.EnemyInRange.Count == 0)
                         continue;
 
-                    group.EnemyTargets.Sort((x, y) =>
+                    group.EnemyInRange.Sort((x, y) =>
                     {
-                        return PosVector.SqDistance(group.Position, x.Target.Position).CompareTo
-                        (PosVector.SqDistance(group.Position, y.Target.Position));
+                        return x.SqDistant.CompareTo(y.SqDistant);
                     });
                 }
-                else
+                else  
                 {
-                    group.FriendlyTargets = new List<TargetingData>();
+                    group.FriendlyInRange = new List<UnitScanData>();
                     foreach (var other in scanner.NearBy)
                     {
                         if (PosVector.SqDistance(group.Position, other.Position) < Range)
                         {
-                            TargetingData targetingData = new TargetingData
+                            UnitScanData targetingData = new UnitScanData
                             {
                                 Target = other,
-                                Direction = PosVector.Angle(group.Position, other.Position),
+                                Direction = PosVector.Angle(group.Position, other.Position) - myFleet.Angle,
                                 BlockedAngle = PosVector.BlockedAngle(group.Position, other.Position),
                                 SqDistant = PosVector.SqDistance(group.Position, other.Position)
                             };
-                            group.FriendlyTargets.Add(targetingData);
+
+                            if (targetingData.Direction < 0)
+                            {
+                                targetingData.Direction += 360;
+                            }
+
+                            group.FriendlyInRange.Add(targetingData);
                         }
                     }
 
-                    if (group.FriendlyTargets.Count == 0)
+                    if (group.FriendlyInRange.Count == 0)
                         continue;
 
-                    group.FriendlyTargets.Sort((x, y) =>
+                    group.FriendlyInRange.Sort((x, y) =>
                     {
-                        return PosVector.SqDistance(group.Position, x.Target.Position).CompareTo
-                        (PosVector.SqDistance(group.Position, y.Target.Position));
+                        return x.SqDistant.CompareTo(y.SqDistant);
                     });
                 }
             }
@@ -257,7 +316,7 @@ public class UnitController : PrefabSingleton<UnitController>
 
         foreach (var group in myFleet.UnitGroups)
         {
-            foreach (var enemy in group.EnemyTargets)
+            foreach (var enemy in group.EnemyInRange)
             {
                 if (PosVector.SqDistance(group.Position, enemy.Target.Position) < TouchRange * TouchRange)
                 {
@@ -285,7 +344,52 @@ public class UnitController : PrefabSingleton<UnitController>
     private void Plan(TeamName team)
     {
         List<UnitFleet> Fleets = team == TeamName.Red ? UnitFleet.AllRed : UnitFleet.AllBlue;
-        //TODO
+
+        foreach (var fleet in Fleets)
+        {
+            foreach (var shooter in fleet.UnitGroups)
+            {
+                if (!shooter.Alive || shooter.EnemyInRange.Count == 0)
+                {
+                    continue;
+                }
+
+                foreach (var target in shooter.EnemyInRange)
+                {
+                    foreach (var enemy in shooter.EnemyInRange)
+                    {
+                        if ( enemy == target)
+                        {
+                            continue;
+                        }
+
+                        if (UnitScanData.IsBlocked(target, enemy))
+                        {
+                            target.enemyBlockCount++;
+                        }
+                    }
+
+                    foreach (var friend in shooter.FriendlyInRange)
+                    {
+
+                        if (UnitScanData.IsBlocked(target, friend))
+                        {
+                            target.friendlyBlockCount++;
+                        }
+                    }
+
+                    foreach (var friend in shooter.OwnFleet)
+                    {
+
+                        if (UnitScanData.IsBlocked(target, friend))
+                        {
+                            target.ownFleetBlockCount++;
+                        }
+                    }
+                }
+                shooter.CheckAttack();
+            }
+        }
     }
 
     private void OnShoot()
@@ -320,16 +424,7 @@ public class UnitController : PrefabSingleton<UnitController>
                         continue;
                     }
 
-                    UnitGroup plan = group.CheckAttack();
-
-                    //if (plan == null)
-                    //{
-                    //    Debug.Log("No");
-                    //}
-                    //else
-                    //{
-                    //    Debug.Log("Yes");
-                    //}
+                    // TODO
                 }
             }
         }

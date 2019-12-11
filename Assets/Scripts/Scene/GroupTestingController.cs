@@ -160,8 +160,8 @@ public class GroupTestingController : MonoBehaviour
     {
         GameObject Go = Instantiate(DummyEnemy.gameObject);
         Go.GetComponent<UnitFleet>().Init(Random.Range(0, 3));
-        Go.GetComponent<DummyEnemy>().Direction = 180;
-        Go.GetComponent<DummyEnemy>().StartingPos = new Vector3(Random.Range(-60, 60), 60, 0);
+        Go.GetComponent<DummyEnemy>().Direction = Random.Range(165, 195);
+        Go.GetComponent<DummyEnemy>().StartingPos = new Vector3(Random.Range(-30, 30), 60, 0);
 
     }
 
