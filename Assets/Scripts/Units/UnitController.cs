@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Diagnostics;
+
+using Debug = UnityEngine.Debug;
 
 public enum ClockStatus
 {
@@ -24,9 +28,21 @@ public class UnitController : PrefabSingleton<UnitController>
     [SerializeField]
     private ClockStatus status = ClockStatus.Scan;
     public ClockStatus Status => status;
+
+    public bool UseTeamPhase = true;
+    public TeamName Phase = TeamName.Red;
+
     public float FieldFrameLenght = 0.5f;
 
     private float lastUpdateTime = 0f;
+    public  int Turn
+    {
+        get
+        {
+            int result = turn / EnumUtil.GetValuesList<ClockStatus>().Count;
+            return UseTeamPhase ? result / 2 : result;
+        }
+    }
     private int turn = 0;
 
     private void OnEnable()
@@ -45,8 +61,17 @@ public class UnitController : PrefabSingleton<UnitController>
         EventManager.StopListening("Shoot", OnShoot);
     }
 
+
+    private string PhaseName()
+    {
+        return (UseTeamPhase ? Phase.ToString() : "") + " " + Turn + " : " + Status.ToString() + " ";
+    }
+
+
     void Update()
     {
+
+        if (MainController.Instance.CurrentScene != SceneName.GroupSettingScene)
         UpdateClock();
     }
 
@@ -55,9 +80,46 @@ public class UnitController : PrefabSingleton<UnitController>
         if (lastUpdateTime + FieldFrameLenght < Time.realtimeSinceStartup)
         {
             turn++;
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             lastUpdateTime = Time.realtimeSinceStartup;
             status = (ClockStatus)(turn % EnumUtil.GetValuesList<ClockStatus>().Count);
             EventManager.TriggerEvent(status.ToString());
+
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
+
+            if (DebugSettings.Current.ShowPhaseTime
+                && Turn % DebugSettings.Current.ShowPhaseTimeInterval == 0)
+            {
+                Debug.Log(PhaseName() + ts.TotalMilliseconds + "ms");
+            }
+
+        }
+    }
+
+    private void OnClockInit()
+    {
+        if (UseTeamPhase)
+        {
+            Phase = Phase == TeamName.Red ? TeamName.Blue : TeamName.Red;
+        }
+
+        if (Phase == TeamName.Red || !UseTeamPhase)
+        {
+            foreach (var fleet in UnitFleet.AllRed)
+            {
+                OnClockInit(fleet);
+            }
+        }
+
+        if (Phase == TeamName.Blue || !UseTeamPhase)
+        {
+            foreach (var fleet in UnitFleet.AllBlue)
+            {
+                OnClockInit(fleet);
+            }
         }
     }
 
@@ -71,29 +133,18 @@ public class UnitController : PrefabSingleton<UnitController>
         }
     }
 
-    private void OnClockInit()
-    {
-        var time = Time.realtimeSinceStartup;
-
-        foreach (var fleet in UnitFleet.AllRed)
-        {
-            OnClockInit(fleet);
-        }
-
-        foreach (var fleet in UnitFleet.AllBlue)
-        {
-            OnClockInit(fleet);
-        }
-
-        Debug.Log("ClockInit Time : " + (Time.realtimeSinceStartup - time));
-    }
 
     private void OnScan()
     {
-        var time = Time.realtimeSinceStartup;
-        ScanTeam(TeamName.Red);
-        ScanTeam(TeamName.Blue);
-        Debug.Log("Scan Time : " + (Time.realtimeSinceStartup - time));
+        if (Phase == TeamName.Red || !UseTeamPhase)
+        {
+            ScanTeam(TeamName.Red);
+        }
+
+        if (Phase == TeamName.Blue || !UseTeamPhase)
+        {
+            ScanTeam(TeamName.Blue);
+        }
     }
 
     private void ScanTeam(TeamName team)
@@ -220,7 +271,7 @@ public class UnitController : PrefabSingleton<UnitController>
                 {
                     result.Add(group);
                     // TODO MOVE to onShoot
-                    UnitGroupSetting.TouchEffect.Spawn(group.transform, 0, 1);
+                    //UnitGroupSetting.TouchEffect.Spawn(group.transform, 0, 1);
                     break;
                 }
             }
@@ -260,10 +311,15 @@ public class UnitController : PrefabSingleton<UnitController>
 
     private void OnPlan()
     {
-        var time = Time.realtimeSinceStartup;
-        Plan(TeamName.Red);
-        Plan(TeamName.Blue);
-        Debug.Log("Plan Time : " + (Time.realtimeSinceStartup - time));
+        if (Phase == TeamName.Red || !UseTeamPhase)
+        {
+            Plan(TeamName.Red);
+        }
+
+        if (Phase == TeamName.Blue || !UseTeamPhase)
+        {
+            Plan(TeamName.Blue);
+        }
     }
 
     private void Plan(TeamName team)
@@ -317,10 +373,15 @@ public class UnitController : PrefabSingleton<UnitController>
 
     private void OnShoot()
     {
-        var time = Time.realtimeSinceStartup;
-        Shoot(TeamName.Red);
-        Shoot(TeamName.Blue);
-        Debug.Log("Shoot Time : " + (Time.realtimeSinceStartup - time));
+        if (Phase == TeamName.Red || !UseTeamPhase) 
+        {
+            Shoot(TeamName.Red);
+        }
+
+        if (Phase == TeamName.Blue || !UseTeamPhase)
+        {
+            Shoot(TeamName.Blue);
+        }
     }
 
     private void Shoot(TeamName team)

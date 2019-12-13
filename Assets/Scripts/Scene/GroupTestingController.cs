@@ -18,12 +18,12 @@ public class GroupTestingController : MonoBehaviour
     public int CurrentSelection = 0;
 
     private Text MainText;
+    private ButtonCellUI SettingSceneButton;
     private ButtonCellUI ResetButton;
     private ButtonCellUI SendEnemyButton;
 
     private List<ButtonCellUI> SavedFormationButtons = new List<ButtonCellUI>();
     private List<ButtonCellUI> ChangeFleetButtons = new List<ButtonCellUI>();
-
 
     private Slider densitySlider;
 
@@ -34,8 +34,13 @@ public class GroupTestingController : MonoBehaviour
     private void OnEnable()
     {
         Instance = this;
-
+        didInit = false;
         EventManager.StartListening(EventList.FloorReady, Init);
+    }
+
+    private void OnDisable()
+    {
+        EventManager.StopListening(EventList.FloorReady, Init);
     }
 
     private void Init()
@@ -44,11 +49,14 @@ public class GroupTestingController : MonoBehaviour
 
         TargetGroup.m_Targets = new CinemachineTargetGroup.Target[allowedFleet];
 
-
-
         var UIController = GroupTestingSceneUIController.Instance;
 
         MainText = UIController.MainText;
+
+        SettingSceneButton = UIController.MainMenu.AddCell();
+        SettingSceneButton.Text.text = "Setting Scene";
+        SettingSceneButton.Button.onClick.AddListener(OnSettingScenePressed);
+
         ResetButton = UIController.MainMenu.AddCell();
         ResetButton.Text.text = "Reset";
         ResetButton.Button.onClick.AddListener(OnResetPressed);
@@ -64,6 +72,9 @@ public class GroupTestingController : MonoBehaviour
             button.Button.onClick.AddListener(delegate { OnSlotPressed(ID); });
             SavedFormationButtons.Add(button);
         }
+
+        UnitFleet.AllRed = new List<UnitFleet>();
+        UnitFleet.AllBlue = new List<UnitFleet>();
 
         for (int i = 0; i < allowedFleet; i++)
         {
@@ -153,7 +164,12 @@ public class GroupTestingController : MonoBehaviour
 
     private void OnResetPressed()
     {
+        MainController.Instance.LoadScene(SceneName.GroupTestingScene);
+    }
 
+    private void OnSettingScenePressed()
+    {
+        MainController.Instance.LoadScene(SceneName.GroupSettingScene);
     }
 
     private void OnSendEnemyPressed()

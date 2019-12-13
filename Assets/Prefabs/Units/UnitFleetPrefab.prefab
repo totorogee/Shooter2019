@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 3610711394988655807}
   - component: {fileID: 3610711394988655806}
   m_Layer: 0
-  m_Name: Fleet
+  m_Name: UnitFleetPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,6 +75,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0f519a582d74036be27df9ac789ad4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnemyTouching: []
+  FriendlyTouching: []
+  WeaponDistant: 30
+  Enemy: []
+  NearBy: []
+  DidInit: 0
   TheGroup: {fileID: 3610711395264517440}
   TheGround: {fileID: 3667346777908646554}
   Team: 0

@@ -32,6 +32,7 @@ public class GroupSettingController : MonoBehaviour
     public float CurrentDensity = 2;
 
     private Text MainText;
+    private ButtonCellUI TestingSceneButton;
     private ButtonCellUI ResetButton;
 
     private List<ButtonCellUI> SavedFormationButtons = new List<ButtonCellUI>();
@@ -55,7 +56,13 @@ public class GroupSettingController : MonoBehaviour
         var UIController = GroupSettingSceneUIController.Instance;
 
         MainText = UIController.MainText;
+
+        TestingSceneButton = UIController.MainMenu.AddCell();
+        TestingSceneButton.Text.text = "Testing Scene";
+        TestingSceneButton.Button.onClick.AddListener(OnTestingScenePressed);
+
         ResetButton = UIController.MainMenu.AddCell();
+        ResetButton.Text.text = "Press a Tile to Start";
         ResetButton.Button.onClick.AddListener(OnResetPressed);
 
         SavedFormation.Init();
@@ -272,5 +279,10 @@ public class GroupSettingController : MonoBehaviour
         {
             item.Value.transform.localPosition = new Vector3(item.Key.x * density / 2, item.Key.y * density / 2, item.Value.transform.localPosition.z);
         }
+    }
+
+    private void OnTestingScenePressed()
+    {
+        MainController.Instance.LoadScene(SceneName.GroupTestingScene);
     }
 }
