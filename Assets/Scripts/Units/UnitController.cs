@@ -16,8 +16,10 @@ public enum ClockStatus
     //Scyn = 5
 }
 
-public class UnitController : PrefabSingleton<UnitController>
+public class UnitController : MonoBehaviour
 {
+    public static UnitController Instance;
+
     public const float TouchRange = 4;
     public UnitFleet UnitFleetPrefab;
     public UnitGroup UnitGroupPrefab;
@@ -47,6 +49,7 @@ public class UnitController : PrefabSingleton<UnitController>
 
     private void OnEnable()
     {
+        Instance = this;
         EventManager.StartListening("ClockInit", OnClockInit);
         EventManager.StartListening("Scan", OnScan);
         EventManager.StartListening("Plan", OnPlan);
@@ -70,8 +73,6 @@ public class UnitController : PrefabSingleton<UnitController>
 
     void Update()
     {
-
-        if (MainController.Instance.CurrentScene != SceneName.GroupSettingScene)
         UpdateClock();
     }
 
