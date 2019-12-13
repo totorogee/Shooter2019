@@ -103,30 +103,40 @@ public class UnitController : PrefabSingleton<UnitController>
 
         foreach (var myFleet in Scanning)
         {
-            myFleet.Touching = null;
             myFleet.Enemy = new List<UnitGroup>();
             myFleet.NearBy = new List<UnitGroup>();
 
+            myFleet.EnemyTouching = new List<UnitGroup>();
+            myFleet.FriendlyTouching = new List<UnitGroup>();
+
             foreach (var theirFleet in Target)
             {
-                Scan(myFleet, theirFleet);
+                ScanFleet(myFleet, theirFleet);
             }
 
             foreach (var theirFleet in Scanning)
             {
-                Scan(myFleet, theirFleet);
+                ScanFleet(myFleet, theirFleet);
             }
         }
     }
 
-    private void Scan(UnitFleet myFleet, UnitFleet theirFleet)
+    private void ScanFleet(UnitFleet myFleet, UnitFleet theirFleet)
     {
-        bool IsEnemy = myFleet.Team != theirFleet.Team;
         if (myFleet == theirFleet)
         {
-            ScanSelf(myFleet);
+            foreach (var group in myFleet.UnitGroups)
+            {
+                if (!group.Alive)
+                {
+                    continue;
+                }
+                group.OwnFleet = GetScanData(group, myFleet.UnitGroups);
+            }
             return;
         }
+
+        bool IsEnemy = myFleet.Team != theirFleet.Team;
 
         float Range = myFleet.FleetRadis + myFleet.WeaponDistant + theirFleet.FleetRadis;
         Range *= Range;
@@ -177,57 +187,53 @@ public class UnitController : PrefabSingleton<UnitController>
 
             if (IsEnemy)
             {
-                group.EnemyInRange = ScanGroup(group, myFleet.Enemy, Range);
+                group.EnemyInRange = GetScanData(group, myFleet.Enemy, Range);
             }
             else
             {
-                group.FriendlyInRange = ScanGroup(group, myFleet.NearBy, Range);
+                group.FriendlyInRange = GetScanData(group, myFleet.NearBy, Range);
             }
         }
 
-        // Check Touch
-        if (myFleet.Touching != null || !IsEnemy)
-        {
-            return;
-        }
+        Range = TouchRange;
+        Range *= Range;
 
-        foreach (var group in myFleet.UnitGroups)
+        if (IsEnemy)
         {
-            foreach (var enemy in group.EnemyInRange)
+            myFleet.EnemyTouching = GetTouchList(myFleet, myFleet.Enemy, Range);
+        }
+        else
+        {
+            myFleet.FriendlyTouching = GetTouchList(myFleet, myFleet.NearBy, Range);
+        }
+    }
+
+    private List<UnitGroup> GetTouchList( UnitFleet fleet , List<UnitGroup> theirGroups , float sqRange = float.MaxValue)
+    {
+        List<UnitGroup> result = new List<UnitGroup>();
+
+        foreach (var group in fleet.UnitGroups)
+        {
+            foreach (var other in theirGroups)
             {
-                if (PosVector.SqDistance(group.Position, enemy.Target.Position) < TouchRange * TouchRange)
+                if (PosVector.SqDistance(group.Position, other.Position) < sqRange)
                 {
-                    myFleet.Touching = group;
+                    result.Add(group);
+                    // TODO MOVE to onShoot
                     UnitGroupSetting.TouchEffect.Spawn(group.transform, 0, 1);
                     break;
                 }
             }
-
-            if (myFleet.Touching != null)
-            {
-                break;
-            }
         }
+        return result;
     }
 
-    private void ScanSelf(UnitFleet fleet)
-    {
-        foreach (var group in fleet.UnitGroups)
-        {
-            if (!group.Alive)
-            {
-                continue;
-            }
-            group.OwnFleet = ScanGroup(group, fleet.UnitGroups);
-        }
-    }
-
-    private List<UnitScanData> ScanGroup (UnitGroup myGroup , List<UnitGroup> theirGroups , float Range = float.MaxValue)
+    private List<UnitScanData> GetScanData (UnitGroup myGroup , List<UnitGroup> theirGroups , float sqRange = float.MaxValue)
     {
         var ResultDatas = new List<UnitScanData>();
         foreach (var other in theirGroups)
         {
-            if (PosVector.SqDistance(myGroup.Position, other.Position) < Range)
+            if (PosVector.SqDistance(myGroup.Position, other.Position) < sqRange)
             {
                 UnitScanData targetingData = new UnitScanData
                 {
@@ -249,7 +255,6 @@ public class UnitController : PrefabSingleton<UnitController>
         {
             return x.SqDistant.CompareTo(y.SqDistant);
         });
-
         return ResultDatas;
     }
 

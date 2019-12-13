@@ -60,7 +60,16 @@ public class UnitFleet : MonoBehaviour
     }
     private int angle = 0;
 
-    public UnitGroup Touching;
+    public List<UnitGroup> EnemyTouching = new List<UnitGroup>();
+    public List<UnitGroup> FriendlyTouching = new List<UnitGroup>();
+
+    public bool Touching
+    {
+        get
+        {
+            return EnemyTouching.Count > 0;
+        }
+    }
 
     public float ForwardSpeed
     {
