@@ -18,7 +18,6 @@ public class UnitController : PrefabSingleton<UnitController>
     public UnitFleet UnitFleetPrefab;
     public UnitGroup UnitGroupPrefab;
     public UnitBase UnitBasePrefab;
-    //public UnitScanner UnitScannerPrefab;
 
     public UnitGroupSetting UnitGroupSetting;
 
@@ -66,11 +65,6 @@ public class UnitController : PrefabSingleton<UnitController>
     {
         fleet.SetDirty();
 
-        //foreach (var scanner in fleet.UnitScanners)
-        //{
-        //    scanner.SetDirty();
-        //}
-
         foreach (var group in fleet.UnitGroups)
         {
             group.SetDirty();
@@ -97,12 +91,12 @@ public class UnitController : PrefabSingleton<UnitController>
     private void OnScan()
     {
         var time = Time.realtimeSinceStartup;
-        Scan(TeamName.Red);
-        Scan(TeamName.Blue);
+        ScanTeam(TeamName.Red);
+        ScanTeam(TeamName.Blue);
         Debug.Log("Scan Time : " + (Time.realtimeSinceStartup - time));
     }
 
-    private void Scan(TeamName team)
+    private void ScanTeam(TeamName team)
     {
         List<UnitFleet> Scanning = team == TeamName.Red ? UnitFleet.AllRed : UnitFleet.AllBlue;
         List<UnitFleet> Target = team == TeamName.Red ? UnitFleet.AllBlue : UnitFleet.AllRed;
@@ -125,50 +119,7 @@ public class UnitController : PrefabSingleton<UnitController>
         }
     }
 
-    private void ScanSelf (UnitFleet fleet)
-    {
-        foreach (var group in fleet.UnitGroups)
-        {
-            if ( !group.Alive )
-            {
-                continue;
-            }
-
-            group.OwnFleet = new List<UnitScanData>();
-            foreach (var other in fleet.UnitGroups)
-            {
-                if (group == other || !other.Alive)
-                {
-                    continue;
-                }
-
-                PosVector groupPos = group.StartingPos * Mathf.RoundToInt(fleet.Density) * 0.5f;
-                PosVector otherPos = other.StartingPos * Mathf.RoundToInt(fleet.Density) * 0.5f;
-
-                UnitScanData targetingData = new UnitScanData
-                {
-                    Target = other,
-                    Direction = PosVector.Angle(groupPos, otherPos) - fleet.Angle,
-                    BlockedAngle = PosVector.BlockedAngle(groupPos, otherPos),
-                    SqDistant = PosVector.SqDistance(groupPos, otherPos)
-                };
-                if (targetingData.Direction < 0)
-                {
-                    targetingData.Direction += 360;
-                }
-
-                group.OwnFleet.Add(targetingData);
-
-
-            }
-            group.OwnFleet.Sort((x, y) =>
-            {
-                return x.SqDistant.CompareTo(y.SqDistant);
-            });
-        }
-    }
-
-    private void Scan (UnitFleet myFleet, UnitFleet theirFleet)
+    private void Scan(UnitFleet myFleet, UnitFleet theirFleet)
     {
         bool IsEnemy = myFleet.Team != theirFleet.Team;
         if (myFleet == theirFleet)
@@ -181,133 +132,58 @@ public class UnitController : PrefabSingleton<UnitController>
         Range *= Range;
 
         if (PosVector.SqDistance(myFleet.Position, theirFleet.Position) > Range)
+        {
             return;
+        }
+
+        Range = myFleet.FleetRadis + myFleet.WeaponDistant;
+        Range *= Range;
 
         foreach (var other in theirFleet.UnitGroups)
         {
             if (!other.Alive)
+            {
                 continue;
+            }
 
             if (PosVector.SqDistance(myFleet.Position, other.Position) < Range)
             {
                 if (IsEnemy)
+                {
                     myFleet.Enemy.Add(other);
+                }
                 else
+                {
                     myFleet.NearBy.Add(other);
+                }
             }
-
         }
 
-        // TODO : Remove Scanner ?
-        //foreach (var scanner in myFleet.UnitScanners)
-        //{
-        //    if (!scanner.Alive)
-        //        continue;
+        myFleet.Enemy.Sort((x, y) =>
+        {
+            return PosVector.SqDistance( myFleet.Position , x.Position ).
+            CompareTo(PosVector.SqDistance (myFleet.Position, y.Position));
+        });
 
-        //    Range = scanner.WeaponDistant + scanner.Radius;
-        //    Range *= Range;
+        Range = myFleet.WeaponDistant;
+        Range *= Range;
 
-        //    if (IsEnemy)
-        //    {
-        //        scanner.Enemy = new List<UnitGroup>();
-        //        foreach (var other in myFleet.Enemy)
-        //        {
-        //            if (PosVector.SqDistance(scanner.Position, other.Position) < Range)
-        //                scanner.Enemy.Add(other);
-        //        }
-
-        //        if (scanner.Enemy.Count == 0)
-        //            continue;
-        //    }
-        //    else
-        //    {
-        //        scanner.NearBy = new List<UnitGroup>();
-        //        foreach (var other in myFleet.NearBy)
-        //        {
-        //            if (PosVector.SqDistance(scanner.Position, other.Position) < Range)
-        //                scanner.NearBy.Add(other);
-        //        }
-
-        //        if (scanner.NearBy.Count == 0)
-        //            continue;
-        //    }
-        // TODO : Remove Scanner ?
-
-            Range = myFleet.WeaponDistant;
-            Range *= Range;
-
-            foreach (var group in myFleet.UnitGroups)
+        foreach (var group in myFleet.UnitGroups)
+        {
+            if (!group.Alive)
             {
-
-
-                if (!group.Alive)
-                    continue;
-
-                if (IsEnemy)
-                {
-                    group.EnemyInRange = new List<UnitScanData>();
-                    foreach (var other in myFleet.Enemy)
-                    {
-                        if (PosVector.SqDistance(group.Position, other.Position) < Range)
-                        {
-                            UnitScanData targetingData = new UnitScanData
-                            {
-                                Target = other,
-                                Direction = PosVector.Angle(group.Position, other.Position) - myFleet.Angle,
-                                BlockedAngle = PosVector.BlockedAngle(group.Position, other.Position),
-                                SqDistant = PosVector.SqDistance(group.Position, other.Position)
-                            };
-                            if (targetingData.Direction < 0)
-                            {
-                                targetingData.Direction += 360;
-                            }
-
-                            group.EnemyInRange.Add(targetingData);
-                        }
-                    }
-
-                    if (group.EnemyInRange.Count == 0)
-                        continue;
-
-                    group.EnemyInRange.Sort((x, y) =>
-                    {
-                        return x.SqDistant.CompareTo(y.SqDistant);
-                    });
-                }
-                else  
-                {
-                    group.FriendlyInRange = new List<UnitScanData>();
-                    foreach (var other in myFleet.NearBy)
-                    {
-                        if (PosVector.SqDistance(group.Position, other.Position) < Range)
-                        {
-                            UnitScanData targetingData = new UnitScanData
-                            {
-                                Target = other,
-                                Direction = PosVector.Angle(group.Position, other.Position) - myFleet.Angle,
-                                BlockedAngle = PosVector.BlockedAngle(group.Position, other.Position),
-                                SqDistant = PosVector.SqDistance(group.Position, other.Position)
-                            };
-
-                            if (targetingData.Direction < 0)
-                            {
-                                targetingData.Direction += 360;
-                            }
-
-                            group.FriendlyInRange.Add(targetingData);
-                        }
-                    }
-
-                    if (group.FriendlyInRange.Count == 0)
-                        continue;
-
-                    group.FriendlyInRange.Sort((x, y) =>
-                    {
-                        return x.SqDistant.CompareTo(y.SqDistant);
-                    });
-                }
+                continue;
             }
-        //}
+
+            if (IsEnemy)
+            {
+                group.EnemyInRange = ScanGroup(group, myFleet.Enemy, Range);
+            }
+            else
+            {
+                group.FriendlyInRange = ScanGroup(group, myFleet.NearBy, Range);
+            }
+        }
 
         // Check Touch
         if (myFleet.Touching != null || !IsEnemy)
@@ -332,6 +208,49 @@ public class UnitController : PrefabSingleton<UnitController>
                 break;
             }
         }
+    }
+
+    private void ScanSelf(UnitFleet fleet)
+    {
+        foreach (var group in fleet.UnitGroups)
+        {
+            if (!group.Alive)
+            {
+                continue;
+            }
+            group.OwnFleet = ScanGroup(group, fleet.UnitGroups);
+        }
+    }
+
+    private List<UnitScanData> ScanGroup (UnitGroup myGroup , List<UnitGroup> theirGroups , float Range = float.MaxValue)
+    {
+        var ResultDatas = new List<UnitScanData>();
+        foreach (var other in theirGroups)
+        {
+            if (PosVector.SqDistance(myGroup.Position, other.Position) < Range)
+            {
+                UnitScanData targetingData = new UnitScanData
+                {
+                    Target = other,
+                    Direction = PosVector.Angle(myGroup.Position, other.Position) - myGroup.Angle,
+                    BlockedAngle = PosVector.BlockedAngle(myGroup.Position, other.Position),
+                    SqDistant = PosVector.SqDistance(myGroup.Position, other.Position)
+                };
+                if (targetingData.Direction < 0)
+                {
+                    targetingData.Direction += 360;
+                }
+
+                ResultDatas.Add(targetingData);
+            }
+        }
+
+        ResultDatas.Sort((x, y) =>
+        {
+            return x.SqDistant.CompareTo(y.SqDistant);
+        });
+
+        return ResultDatas;
     }
 
     private void OnPlan()
@@ -359,7 +278,7 @@ public class UnitController : PrefabSingleton<UnitController>
                 {
                     foreach (var enemy in shooter.EnemyInRange)
                     {
-                        if ( enemy == target)
+                        if (enemy == target)
                         {
                             continue;
                         }
@@ -372,7 +291,6 @@ public class UnitController : PrefabSingleton<UnitController>
 
                     foreach (var friend in shooter.FriendlyInRange)
                     {
-
                         if (UnitScanData.IsBlocked(target, friend))
                         {
                             target.friendlyBlockCount++;
@@ -381,7 +299,6 @@ public class UnitController : PrefabSingleton<UnitController>
 
                     foreach (var friend in shooter.OwnFleet)
                     {
-
                         if (UnitScanData.IsBlocked(target, friend))
                         {
                             target.ownFleetBlockCount++;
@@ -406,28 +323,15 @@ public class UnitController : PrefabSingleton<UnitController>
         List<UnitFleet> Fleets = team == TeamName.Red ? UnitFleet.AllRed : UnitFleet.AllBlue;
         foreach (var fleet in Fleets)
         {
-            //foreach (var scanner in fleet.UnitScanners)
-            //{
-            //    if (!scanner.Alive)
-            //    {
-            //        continue;
-            //    }
-
-            //    if (scanner.Enemy.Count == 0)
-            //    {
-            //        continue;
-            //    }
-
-                foreach (var group in fleet.UnitGroups)
+            foreach (var group in fleet.UnitGroups)
+            {
+                if (!group.Alive)
                 {
-                    if (!group.Alive)
-                    {
-                        continue;
-                    }
-
-                    // TODO
+                    continue;
                 }
-            //}
+
+                // TODO
+            }
         }
     }
 }

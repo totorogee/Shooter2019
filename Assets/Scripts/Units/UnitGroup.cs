@@ -113,6 +113,22 @@ public class UnitGroup : MonoBehaviour
         }
     }
 
+    public float Angle
+    {
+        get
+        {
+            if (Fleet == null)
+            {
+                Debug.Log("Error");
+                return 0; 
+            }
+            else
+            {
+                return Fleet.Angle;
+            }
+        }
+    }
+
     public List<UnitBase> UnitBases = new List<UnitBase>();
 
     private bool didInit;
