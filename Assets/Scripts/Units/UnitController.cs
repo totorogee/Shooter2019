@@ -15,13 +15,10 @@ public enum ClockStatus
 public class UnitController : PrefabSingleton<UnitController>
 {
     public const float TouchRange = 4;
-
-    public int MaxWeaponRange = 20;
-
     public UnitFleet UnitFleetPrefab;
     public UnitGroup UnitGroupPrefab;
     public UnitBase UnitBasePrefab;
-    public UnitScanner UnitScannerPrefab;
+    //public UnitScanner UnitScannerPrefab;
 
     public UnitGroupSetting UnitGroupSetting;
 
@@ -69,10 +66,10 @@ public class UnitController : PrefabSingleton<UnitController>
     {
         fleet.SetDirty();
 
-        foreach (var scanner in fleet.UnitScanners)
-        {
-            scanner.SetDirty();
-        }
+        //foreach (var scanner in fleet.UnitScanners)
+        //{
+        //    scanner.SetDirty();
+        //}
 
         foreach (var group in fleet.UnitGroups)
         {
@@ -201,51 +198,55 @@ public class UnitController : PrefabSingleton<UnitController>
 
         }
 
-        foreach (var scanner in myFleet.UnitScanners)
-        {
-            if (!scanner.Alive)
-                continue;
+        // TODO : Remove Scanner ?
+        //foreach (var scanner in myFleet.UnitScanners)
+        //{
+        //    if (!scanner.Alive)
+        //        continue;
 
-            Range = scanner.WeaponDistant + scanner.Radius;
+        //    Range = scanner.WeaponDistant + scanner.Radius;
+        //    Range *= Range;
+
+        //    if (IsEnemy)
+        //    {
+        //        scanner.Enemy = new List<UnitGroup>();
+        //        foreach (var other in myFleet.Enemy)
+        //        {
+        //            if (PosVector.SqDistance(scanner.Position, other.Position) < Range)
+        //                scanner.Enemy.Add(other);
+        //        }
+
+        //        if (scanner.Enemy.Count == 0)
+        //            continue;
+        //    }
+        //    else
+        //    {
+        //        scanner.NearBy = new List<UnitGroup>();
+        //        foreach (var other in myFleet.NearBy)
+        //        {
+        //            if (PosVector.SqDistance(scanner.Position, other.Position) < Range)
+        //                scanner.NearBy.Add(other);
+        //        }
+
+        //        if (scanner.NearBy.Count == 0)
+        //            continue;
+        //    }
+        // TODO : Remove Scanner ?
+
+            Range = myFleet.WeaponDistant;
             Range *= Range;
 
-            if (IsEnemy)
+            foreach (var group in myFleet.UnitGroups)
             {
-                scanner.Enemy = new List<UnitGroup>();
-                foreach (var other in myFleet.Enemy)
-                {
-                    if (PosVector.SqDistance(scanner.Position, other.Position) < Range)
-                        scanner.Enemy.Add(other);
-                }
 
-                if (scanner.Enemy.Count == 0)
-                    continue;
-            }
-            else
-            {
-                scanner.NearBy = new List<UnitGroup>();
-                foreach (var other in myFleet.NearBy)
-                {
-                    if (PosVector.SqDistance(scanner.Position, other.Position) < Range)
-                        scanner.NearBy.Add(other);
-                }
 
-                if (scanner.NearBy.Count == 0)
-                    continue;
-            }
-
-            Range = scanner.WeaponDistant;
-            Range *= Range;
-
-            foreach (var group in scanner.UnitGroups)
-            {
                 if (!group.Alive)
                     continue;
 
                 if (IsEnemy)
                 {
                     group.EnemyInRange = new List<UnitScanData>();
-                    foreach (var other in scanner.Enemy)
+                    foreach (var other in myFleet.Enemy)
                     {
                         if (PosVector.SqDistance(group.Position, other.Position) < Range)
                         {
@@ -276,7 +277,7 @@ public class UnitController : PrefabSingleton<UnitController>
                 else  
                 {
                     group.FriendlyInRange = new List<UnitScanData>();
-                    foreach (var other in scanner.NearBy)
+                    foreach (var other in myFleet.NearBy)
                     {
                         if (PosVector.SqDistance(group.Position, other.Position) < Range)
                         {
@@ -306,7 +307,7 @@ public class UnitController : PrefabSingleton<UnitController>
                     });
                 }
             }
-        }
+        //}
 
         // Check Touch
         if (myFleet.Touching != null || !IsEnemy)
@@ -405,19 +406,19 @@ public class UnitController : PrefabSingleton<UnitController>
         List<UnitFleet> Fleets = team == TeamName.Red ? UnitFleet.AllRed : UnitFleet.AllBlue;
         foreach (var fleet in Fleets)
         {
-            foreach (var scanner in fleet.UnitScanners)
-            {
-                if (!scanner.Alive)
-                {
-                    continue;
-                }
+            //foreach (var scanner in fleet.UnitScanners)
+            //{
+            //    if (!scanner.Alive)
+            //    {
+            //        continue;
+            //    }
 
-                if (scanner.Enemy.Count == 0)
-                {
-                    continue;
-                }
+            //    if (scanner.Enemy.Count == 0)
+            //    {
+            //        continue;
+            //    }
 
-                foreach (var group in scanner.UnitGroups)
+                foreach (var group in fleet.UnitGroups)
                 {
                     if (!group.Alive)
                     {
@@ -426,7 +427,7 @@ public class UnitController : PrefabSingleton<UnitController>
 
                     // TODO
                 }
-            }
+            //}
         }
     }
 }

@@ -29,6 +29,7 @@ MonoBehaviour:
   Weapons:
   - {fileID: 11400000, guid: 8c3a12c979fa441d2b570a1bbf8c3203, type: 2}
   - {fileID: 11400000, guid: 5e36805a781524f00ad61ea462d0e4ed, type: 2}
+  - {fileID: 11400000, guid: 72d63ffc196d342939aa874a9a61987d, type: 2}
   GroupOfOne: {fileID: 1641677521573948058, guid: b4900a256d2d744ee93660ef55504cb8,
     type: 3}
   GroupOfTwo: {fileID: 1670558256288301910, guid: ce3ec03362e184710b61be000bdf2ba6,

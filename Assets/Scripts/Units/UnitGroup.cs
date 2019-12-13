@@ -14,7 +14,7 @@ public class UnitScanData
     public int friendlyBlockCount = 0;
     public int ownFleetBlockCount = 0;
 
-    public static bool IsBlocked(UnitScanData target , UnitScanData other)
+    public static bool IsBlocked(UnitScanData target, UnitScanData other)
     {
         float angle = target.Direction - other.Direction;
 
@@ -34,11 +34,11 @@ public class UnitScanData
 
 public enum UnitGroupActionStatus // TODO
 {
-    Cleaned =0,
-    ScannedEnemy =1,
+    Cleaned = 0,
+    ScannedEnemy = 1,
     ScannedBlocks = 2,
-    PlannedAttact =3,
-    Moved =4
+    PlannedAttact = 3,
+    Moved = 4
 }
 
 public class UnitGroup : MonoBehaviour
@@ -89,7 +89,7 @@ public class UnitGroup : MonoBehaviour
         {
             foreach (var item in UnitBases)
             {
-                if(item.UnitStatus == UnitBaseStatus.Nil || item.UnitStatus == UnitBaseStatus.Stunned)
+                if (item.UnitStatus == UnitBaseStatus.Nil || item.UnitStatus == UnitBaseStatus.Stunned)
                 {
                     return true;
                 }
@@ -123,7 +123,7 @@ public class UnitGroup : MonoBehaviour
         localPosition = new PosVector(0, 0);
     }
 
-    public void Init(UnitFleet fleet , PosVector starting,  int size )
+    public void Init(UnitFleet fleet, PosVector starting, int size)
     {
         Fleet = fleet;
         StartingPos = starting;
@@ -134,7 +134,7 @@ public class UnitGroup : MonoBehaviour
 
         didInit = true;
 
-        if( Fleet.Team == TeamName.Red)
+        if (Fleet.Team == TeamName.Red)
         {
             AllRed.Add(this);
         }
@@ -158,37 +158,36 @@ public class UnitGroup : MonoBehaviour
     {
         Debug.Log("TODO : Attack with block info");
 
-        if(!Alive)
+        if (!Alive)
         {
             return null;
         }
 
-        if (EnemyInRange.Count != 0)
+        for (int j = 0; j < Setting.Weapons.Count; j++)
         {
-            //Debug.Log(Enemy.Count + " " + Fleet.Team);
-        }
+            WeaponSettings weapon = Setting.Weapons[j];
 
-        for (int i = 0; i < EnemyInRange.Count; i++)
-        {
-            UnitGroup enemy = EnemyInRange[i].Target;
-
-            float Angle =  PosVector.Angle(Position, enemy.Position) - Fleet.Angle;
-            if (Angle < 0)
+            for (int i = 0; i < EnemyInRange.Count; i++)
             {
-                Angle += 360;
-            }
-
-            float SqDistant = PosVector.SqDistance(Position, enemy.Position);
-
-            for (int j = 0; j < Setting.Weapons.Count; j++)
-            {
-                WeaponSettings weapon = Setting.Weapons[j];
-                if  ( ( SqDistant < weapon.Range * weapon.Range)
-                    && (SqDistant > weapon.MinRange * weapon.MinRange)
-                    && (Angle < weapon.Angle || 360 - Angle < weapon.Angle)
-                    && enemy.Alive )
+                UnitGroup enemy = EnemyInRange[i].Target;
+                if (!enemy.Alive)
                 {
+                    continue;
+                }
 
+                float SqDistant = EnemyInRange[i].SqDistant;
+                if (SqDistant > weapon.Range * weapon.Range)
+                {
+                    break;
+                }
+
+                float Angle = EnemyInRange[i].Direction;
+                int blockage = EnemyInRange[i].enemyBlockCount + EnemyInRange[i].friendlyBlockCount + EnemyInRange[i].ownFleetBlockCount;
+
+                if ((SqDistant > weapon.MinRange * weapon.MinRange)
+                    && (Angle < weapon.Angle || 360 - Angle < weapon.Angle)
+                    && (blockage <= weapon.MaxPenetrate))
+                {
                     if (Fleet.Team == TeamName.Red)
                     {
                         weapon.WarnningEffect.Spawn(transform, enemy.transform, 0f, 0.2f);
@@ -236,7 +235,7 @@ public class UnitGroup : MonoBehaviour
         }
     }
 
-    public void ScanRange(float range )
+    public void ScanRange(float range)
     {
         Debug.Log("  TODO : Get all Block info ");
     }

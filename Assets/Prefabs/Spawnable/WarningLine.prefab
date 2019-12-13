@@ -46,16 +46,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Body: {fileID: 4065211633010657275}
+  StartTarget: {fileID: 0}
+  EndTarget: {fileID: 0}
   StartPos: {x: 0, y: 0, z: 0}
   EndPos: {x: 0, y: 0, z: 0}
-  StartOnAwake: 1
   appearTime: 1
   disappearTime: 80
   EndLenght: 0.5
   StartLenght: 1
   LineRenderer: {fileID: 4065211633010657272}
-  Start: {fileID: 0}
-  Target: {fileID: 0}
   StartColor:
     serializedVersion: 2
     key0: {r: 1, g: 0, b: 0, a: 0.5019608}

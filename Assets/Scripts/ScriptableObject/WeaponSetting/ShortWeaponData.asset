@@ -13,13 +13,12 @@ MonoBehaviour:
   m_Name: ShortWeaponData
   m_EditorClassIdentifier: 
   weaponName: Short
-  range: 4
-  minRange: 1
+  maxPenetrate: 5
+  range: 8
+  minRange: 2
   angle: 120
   damage: 2
-  stunTime: 1
-  blockDamagePenalty: 2
-  blockRangePenalty: 2
+  stunTime: 6
   WarnningEffect: {fileID: 4065211632820013601, guid: dd9063789036a4f98b931ae487965d8f,
     type: 3}
   ShootingEffect: {fileID: 2804840739188507719, guid: ac378a42605b14bb5ae245cf0c658d4f,

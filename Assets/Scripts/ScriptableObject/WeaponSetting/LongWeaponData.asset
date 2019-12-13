@@ -13,13 +13,12 @@ MonoBehaviour:
   m_Name: LongWeaponData
   m_EditorClassIdentifier: 
   weaponName: Long
+  maxPenetrate: 0
   range: 30
   minRange: 8
   angle: 45
   damage: 10
   stunTime: 0
-  blockDamagePenalty: 2
-  blockRangePenalty: 2
   WarnningEffect: {fileID: 4065211632820013601, guid: dd9063789036a4f98b931ae487965d8f,
     type: 3}
   ShootingEffect: {fileID: 2804840739188507719, guid: ac378a42605b14bb5ae245cf0c658d4f,

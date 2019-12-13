@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40b7e6619eef489c9c581f674366825, type: 3}
   m_Name: PenetrateWeaponData
   m_EditorClassIdentifier: 
-  weaponName: 
+  weaponName: Penetrate
   maxPenetrate: 2
-  range: 20
+  range: 25
   minRange: 8
-  angle: 90
-  damage: 8
-  stunTime: 1
-  WarnningEffect: {fileID: 0}
-  ShootingEffect: {fileID: 0}
+  angle: 45
+  damage: 5
+  stunTime: 0
+  WarnningEffect: {fileID: 4065211632820013601, guid: dd9063789036a4f98b931ae487965d8f,
+    type: 3}
+  ShootingEffect: {fileID: 2804840739188507719, guid: efd4eea8e73ab4019b9e793b9eb3547f,
+    type: 3}

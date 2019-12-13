@@ -124,7 +124,7 @@ public class UnitFleet : MonoBehaviour
         }
     }
 
-    public int WeaponDistant = 0;
+    public int WeaponDistant = 30; // TODO 
     public List<UnitGroup> Enemy = new List<UnitGroup>();
     public List<UnitGroup> NearBy = new List<UnitGroup>();
 
@@ -138,7 +138,7 @@ public class UnitFleet : MonoBehaviour
     public TeamName Team = TeamName.Red;
 
     public List<UnitGroup> UnitGroups = new List<UnitGroup>();
-    public List<UnitScanner> UnitScanners = new List<UnitScanner>();
+    //public List<UnitScanner> UnitScanners = new List<UnitScanner>();
 
     private const int scannerDensity = 6;
 
@@ -168,7 +168,7 @@ public class UnitFleet : MonoBehaviour
         {
             AllBlue.Add(this);
         }
-        SetScanner();
+        //SetScanner();
 
         //Debug.Log("Init Time : " + (Time.realtimeSinceStartup - time));
     }
@@ -188,93 +188,93 @@ public class UnitFleet : MonoBehaviour
         // TODO
     }
 
-    private void SetScanner()
-    {
-        GameObject Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject , TheGroup);
-        UnitScanner temp = Go.GetComponent<UnitScanner>();
-        temp.Fleet = this;
-        temp.StartingPos = new PosVector(0, 0);
-        temp.UnitGroups = new List<UnitGroup>();
+    //private void SetScanner()
+    //{
+    //    GameObject Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject , TheGroup);
+    //    UnitScanner temp = Go.GetComponent<UnitScanner>();
+    //    temp.Fleet = this;
+    //    temp.StartingPos = new PosVector(0, 0);
+    //    temp.UnitGroups = new List<UnitGroup>();
 
-        UnitScanners = new List<UnitScanner> { temp };
+    //    UnitScanners = new List<UnitScanner> { temp };
 
-        foreach (var item in UnitGroups)
-        {
-            int x = Mathf.RoundToInt ((float)item.StartingPos.x / scannerDensity );
-            int y = Mathf.RoundToInt ((float)item.StartingPos.y / scannerDensity );
+    //    foreach (var item in UnitGroups)
+    //    {
+    //        int x = Mathf.RoundToInt ((float)item.StartingPos.x / scannerDensity );
+    //        int y = Mathf.RoundToInt ((float)item.StartingPos.y / scannerDensity );
 
-            PosVector pos = new PosVector(x * scannerDensity, y * scannerDensity);
-            temp = null;
+    //        PosVector pos = new PosVector(x * scannerDensity, y * scannerDensity);
+    //        temp = null;
 
-            foreach (var scanner in UnitScanners)
-            {
-                if (scanner.StartingPos == pos )
-                {
-                    temp = scanner;
-                }
-            }
+    //        foreach (var scanner in UnitScanners)
+    //        {
+    //            if (scanner.StartingPos == pos )
+    //            {
+    //                temp = scanner;
+    //            }
+    //        }
 
-            if (temp == null)
-            {
-                Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject , TheGroup);
-                temp = Go.GetComponent<UnitScanner>();
-                temp.Fleet = this;
-                temp.StartingPos = pos;
-                temp.UnitGroups = new List<UnitGroup> { item };
+    //        if (temp == null)
+    //        {
+    //            Go = Instantiate(UnitController.Instance.UnitScannerPrefab.gameObject , TheGroup);
+    //            temp = Go.GetComponent<UnitScanner>();
+    //            temp.Fleet = this;
+    //            temp.StartingPos = pos;
+    //            temp.UnitGroups = new List<UnitGroup> { item };
 
-                UnitScanners.Add(temp);
-            }
-            else
-            {
-                temp.UnitGroups.Add(item);
-            }
-        }
+    //            UnitScanners.Add(temp);
+    //        }
+    //        else
+    //        {
+    //            temp.UnitGroups.Add(item);
+    //        }
+    //    }
 
-        UnitScanners.Sort((x, y) =>
-        {
-            return PosVector.SqDistance(new PosVector(0, 0), x.StartingPos).CompareTo
-            ( PosVector.SqDistance(new PosVector(0, 0), y.StartingPos));
-        });
+    //    UnitScanners.Sort((x, y) =>
+    //    {
+    //        return PosVector.SqDistance(new PosVector(0, 0), x.StartingPos).CompareTo
+    //        ( PosVector.SqDistance(new PosVector(0, 0), y.StartingPos));
+    //    });
 
-        foreach (var item in UnitScanners)
-        {
-            item.UnitGroups.Sort((x, y) =>
-            {
-                int result = PosVector.SqDistance(item.StartingPos, x.StartingPos).CompareTo
-                (PosVector.SqDistance(item.StartingPos, y.StartingPos));
+    //    foreach (var item in UnitScanners)
+    //    {
+    //        item.UnitGroups.Sort((x, y) =>
+    //        {
+    //            int result = PosVector.SqDistance(item.StartingPos, x.StartingPos).CompareTo
+    //            (PosVector.SqDistance(item.StartingPos, y.StartingPos));
 
-                if (result != 0)
-                {
-                    return result;
-                }
+    //            if (result != 0)
+    //            {
+    //                return result;
+    //            }
 
-                return PosVector.Angle(item.StartingPos, x.StartingPos).CompareTo
-                (PosVector.Angle(item.StartingPos, y.StartingPos));
-            });
+    //            return PosVector.Angle(item.StartingPos, x.StartingPos).CompareTo
+    //            (PosVector.Angle(item.StartingPos, y.StartingPos));
+    //        });
 
-            int distant = 0;
+    //        int distant = 0;
 
-            for (int i = 0; i < item.UnitGroups.Count; i++)
-            {
-                var x = item.UnitGroups[i];
-                distant = Mathf.Max(PosVector.SqDistance(item.StartingPos, x.StartingPos), distant);
-            }
-            item.Radius = Mathf.CeilToInt(Mathf.Sqrt(distant));
+    //        for (int i = 0; i < item.UnitGroups.Count; i++)
+    //        {
+    //            var x = item.UnitGroups[i];
+    //            distant = Mathf.Max(PosVector.SqDistance(item.StartingPos, x.StartingPos), distant);
+    //        }
+    //        item.Radius = Mathf.CeilToInt(Mathf.Sqrt(distant));
 
-            distant = 0;
-            for (int i = 0; i < item.UnitGroups.Count; i++)
-            {
-                var x = item.UnitGroups[i];
-                for (int j = 0; j < x.Setting.Weapons.Count; j++)
-                {
-                    distant = Mathf.Max(distant, x.Setting.Weapons[j].Range);
-                }
-            }
+    //        distant = 0;
+    //        for (int i = 0; i < item.UnitGroups.Count; i++)
+    //        {
+    //            var x = item.UnitGroups[i];
+    //            for (int j = 0; j < x.Setting.Weapons.Count; j++)
+    //            {
+    //                distant = Mathf.Max(distant, x.Setting.Weapons[j].Range);
+    //            }
+    //        }
 
-            item.WeaponDistant = distant;
-            WeaponDistant = Mathf.Max(WeaponDistant, distant);
-        }
-    }
+    //        item.WeaponDistant = distant;
+    //        WeaponDistant = Mathf.Max(WeaponDistant, distant);
+    //    }
+    //}
 
     private void SetGroupsLinks(UnitGroup unit )
     {
